@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Infra Lab</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <p class="kicker">Phase 1 · Pretraining fundamentals</p>
+        <h1>AI Infra Lab</h1>
+        <p class="lede">
+          A guided explainer for engineers who know infra already and want the mental model for how LLMs are trained.
+          Think of it as a pipeline, but the routing logic is learned.
+        </p>
+        <div class="hero-links">
+          <a href="content/phase-1.md">Full phase 1 notes</a>
+          <a href="#concepts">Concepts</a>
+          <a href="#animation">Animated flow</a>
+          <a href="#reading">Reading</a>
+        </div>
+      </header>
+
+      <section class="summary-strip">
+        <div>
+          <span class="label">Mental model</span>
+          <p>Raw text → tokens → embeddings → transformer layers → next-token prediction.</p>
+        </div>
+        <div>
+          <span class="label">Why it matters</span>
+          <p>Most AI infra pain comes from memory, throughput, and sequence length.</p>
+        </div>
+        <div>
+          <span class="label">What you should know</span>
+          <p>Embeddings, attention, Q/K/V, residuals, MLPs, loss, and optimizer steps.</p>
+        </div>
+      </section>
+
+      <section class="grid" id="concepts">
+        <article class="card pulse">
+          <h2>Tokens</h2>
+          <p>Text is broken into subword pieces so the model can operate on a finite vocabulary.</p>
+        </article>
+        <article class="card pulse delay-1">
+          <h2>Embeddings</h2>
+          <p>Each token becomes a learned vector. Same token, same base vector, every time.</p>
+        </article>
+        <article class="card pulse delay-2">
+          <h2>Attention</h2>
+          <p>Every token decides which other tokens matter most for the current prediction.</p>
+        </article>
+        <article class="card pulse delay-3">
+          <h2>Systems</h2>
+          <p>Training speed is usually limited by GPU memory, batch size, and checkpointing.</p>
+        </article>
+      </section>
+
+      <section class="lesson">
+        <h2>Core concepts</h2>
+        <div class="lesson-grid">
+          <article>
+            <h3>Transformer</h3>
+            <p>
+              A transformer is a stack of layers that repeatedly refines token representations.
+              Attention mixes information across tokens; the MLP transforms each token independently.
+            </p>
+          </article>
+          <article>
+            <h3>Query / Key / Value</h3>
+            <p>
+              For each token, the model makes a query, key, and value.
+              Query asks what to look for, key says how to match, value carries the content.
+            </p>
+          </article>
+          <article>
+            <h3>Causal attention</h3>
+            <p>
+              GPT-style models only look left. A token can use earlier context, not future tokens.
+              That is what makes next-token prediction work.
+            </p>
+          </article>
+          <article>
+            <h3>Residuals</h3>
+            <p>
+              Residual connections add the layer output back to the input so the network can learn
+              small updates instead of rebuilding everything from scratch.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="animation-panel" id="animation">
+        <div class="panel-heading">
+          <h2>Animated flow</h2>
+          <p>Watch one batch move through the main stages.</p>
+        </div>
+
+        <div class="pipeline">
+          <div class="lane">
+            <span>Tokens</span>
+            <div class="track">
+              <b class="chip">the</b>
+              <b class="chip delay-1">cat</b>
+              <b class="chip delay-2">sat</b>
+              <b class="chip delay-3">on</b>
+              <b class="chip delay-4">mat</b>
+            </div>
+          </div>
+
+          <div class="lane arrow-line">
+            <span>Embedding</span>
+            <div class="embed-bars" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+            <p>Token ids become vectors. This is the first learned lookup table.</p>
+          </div>
+
+          <div class="lane qkv">
+            <span>Q / K / V</span>
+            <div class="qkv-cols">
+              <div><strong>Q</strong><small>What I want</small></div>
+              <div><strong>K</strong><small>How I match</small></div>
+              <div><strong>V</strong><small>What I send</small></div>
+            </div>
+            <div class="attention-map" aria-hidden="true">
+              <i></i><i></i><i></i>
+              <i></i><i></i><i></i>
+              <i></i><i></i><i></i>
+            </div>
+          </div>
+
+          <div class="lane">
+            <span>Transformer block</span>
+            <div class="block-stack">
+              <div>Attention</div>
+              <div>Residual add</div>
+              <div>MLP</div>
+            </div>
+            <p>Attention moves information across tokens; the MLP reshapes each token.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson">
+        <h2>How to think about training</h2>
+        <ul>
+          <li>The model sees a window of tokens and predicts the next token.</li>
+          <li>Loss measures how wrong the prediction is.</li>
+          <li>Backprop computes gradients for embeddings, attention, and MLP weights.</li>
+          <li>The optimizer updates weights and the cycle repeats millions of times.</li>
+        </ul>
+      </section>
+
+      <section class="sources" id="reading">
+        <h2>Reading</h2>
+        <ul>
+          <li><a href="https://github.com/karpathy/nanoGPT" target="_blank" rel="noreferrer">Karpathy: nanoGPT</a></li>
+          <li><a href="https://www.youtube.com/watch?v=kCc8FmEb1nY" target="_blank" rel="noreferrer">Karpathy: Let’s build GPT from scratch</a></li>
+          <li><a href="https://openai.com/news/research/" target="_blank" rel="noreferrer">OpenAI Research / News</a></li>
+          <li><a href="https://www.anthropic.com/news" target="_blank" rel="noreferrer">Anthropic Newsroom</a></li>
+          <li><a href="https://ai.meta.com/blog/" target="_blank" rel="noreferrer">Meta AI Blog</a></li>
+          <li><a href="https://deepmind.google/blog/" target="_blank" rel="noreferrer">Google DeepMind Blog</a></li>
+        </ul>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
