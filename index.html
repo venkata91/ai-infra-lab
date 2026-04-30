@@ -95,51 +95,65 @@
       <section class="animation-panel" id="animation">
         <div class="panel-heading">
           <h2>Animated flow</h2>
-          <p>Watch one batch move through the main stages.</p>
+          <p>ByteByteGo-style: one crisp diagram, one highlighted idea, one stage at a time.</p>
         </div>
 
-        <div class="pipeline">
-          <div class="lane">
-            <span>Tokens</span>
-            <div class="track">
-              <b class="chip">the</b>
-              <b class="chip delay-1">cat</b>
-              <b class="chip delay-2">sat</b>
-              <b class="chip delay-3">on</b>
-              <b class="chip delay-4">mat</b>
-            </div>
+        <div class="storyboard" data-storyboard>
+          <div class="stage-strip" aria-label="Training pipeline stages">
+            <button class="stage-pill is-active" data-stage-pill>1 Input</button>
+            <button class="stage-pill" data-stage-pill>2 Forward pass</button>
+            <button class="stage-pill" data-stage-pill>3 Prediction</button>
+            <button class="stage-pill" data-stage-pill>4 Loss</button>
+            <button class="stage-pill" data-stage-pill>5 Backpropagation</button>
+            <button class="stage-pill" data-stage-pill>6 Gradients</button>
+            <button class="stage-pill" data-stage-pill>7 Update</button>
+            <button class="stage-pill" data-stage-pill>8 Residual</button>
           </div>
 
-          <div class="lane arrow-line">
-            <span>Embedding</span>
-            <div class="embed-bars" aria-hidden="true">
-              <i></i><i></i><i></i><i></i>
+          <div class="storyboard-layout">
+            <div class="diagram-card">
+              <div class="diagram-heading">
+                <span class="diagram-kicker" data-current-stage>Input</span>
+                <h3 data-current-title>Tokens enter the model</h3>
+              </div>
+
+              <div class="pipeline-diagram" data-mode="forward">
+                <div class="diagram-lane lane-forward" aria-hidden="true"></div>
+                <div class="diagram-lane lane-backward" aria-hidden="true"></div>
+                <div class="diagram-lane lane-residual" aria-hidden="true"></div>
+
+                <div class="diagram-nodes">
+                  <div class="diagram-node node-input">Tokens</div>
+                  <div class="diagram-node node-embed">Embedding</div>
+                  <div class="diagram-node node-block">Transformer block</div>
+                  <div class="diagram-node node-logits">Logits</div>
+                  <div class="diagram-node node-softmax">Softmax</div>
+                </div>
+
+                <div class="diagram-packet packet-main"></div>
+                <div class="diagram-packet packet-backward"></div>
+                <div class="diagram-packet packet-residual"></div>
+                <div class="diagram-badge" data-current-badge>forward</div>
+              </div>
             </div>
-            <p>Token ids become vectors. This is the first learned lookup table.</p>
+
+            <aside class="detail-card">
+              <p data-current-copy>Text becomes token ids, then the forward pass begins.</p>
+              <ul data-current-bullets></ul>
+            </aside>
           </div>
 
-          <div class="lane qkv">
-            <span>Q / K / V</span>
-            <div class="qkv-cols">
-              <div><strong>Q</strong><small>What I want</small></div>
-              <div><strong>K</strong><small>How I match</small></div>
-              <div><strong>V</strong><small>What I send</small></div>
+          <div class="glossary">
+            <div class="panel-heading compact">
+              <h3>Glossary</h3>
+              <p>The minimum vocabulary that makes the animation click.</p>
             </div>
-            <div class="attention-map" aria-hidden="true">
-              <i></i><i></i><i></i>
-              <i></i><i></i><i></i>
-              <i></i><i></i><i></i>
+            <div class="glossary-grid">
+              <div><strong>Forward pass</strong><p>The model’s prediction path, left to right.</p></div>
+              <div><strong>Logits</strong><p>Raw next-token scores before softmax.</p></div>
+              <div><strong>Gradient</strong><p>The direction and size of change that reduces loss.</p></div>
+              <div><strong>Residual connection</strong><p>A shortcut path that adds the input back in.</p></div>
             </div>
-          </div>
-
-          <div class="lane">
-            <span>Transformer block</span>
-            <div class="block-stack">
-              <div>Attention</div>
-              <div>Residual add</div>
-              <div>MLP</div>
-            </div>
-            <p>Attention moves information across tokens; the multi-layer perceptron (MLP) reshapes each token.</p>
           </div>
         </div>
       </section>
