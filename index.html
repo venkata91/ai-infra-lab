@@ -95,51 +95,74 @@
       <section class="animation-panel" id="animation">
         <div class="panel-heading">
           <h2>Animated flow</h2>
-          <p>Watch one batch move through the main stages.</p>
+          <p>Watch the whole training loop move from input to update, one stage at a time.</p>
         </div>
 
-        <div class="pipeline">
-          <div class="lane">
-            <span>Tokens</span>
-            <div class="track">
-              <b class="chip">the</b>
-              <b class="chip delay-1">cat</b>
-              <b class="chip delay-2">sat</b>
-              <b class="chip delay-3">on</b>
-              <b class="chip delay-4">mat</b>
-            </div>
+        <div class="storyboard" data-storyboard>
+          <div class="storyboard-stageboard" aria-label="Training pipeline stages">
+            <article class="story-card is-active" data-stage>
+              <span>1 · Input</span>
+              <strong>Tokens enter the model</strong>
+              <p>Text becomes a sequence of token ids that the network can process.</p>
+            </article>
+            <article class="story-card" data-stage>
+              <span>2 · Forward pass</span>
+              <strong>Layers transform the signal</strong>
+              <p>The model mixes information forward through embeddings, attention, and MLPs.</p>
+            </article>
+            <article class="story-card" data-stage>
+              <span>3 · Prediction</span>
+              <strong>Guess the next token</strong>
+              <p>The final layer produces logits, then a probability for each candidate token.</p>
+            </article>
+            <article class="story-card" data-stage>
+              <span>4 · Loss</span>
+              <strong>Measure the mistake</strong>
+              <p>Compare the guess with the target token to see how wrong the model was.</p>
+            </article>
+            <article class="story-card" data-stage>
+              <span>5 · Backpropagation</span>
+              <strong>Send error backward</strong>
+              <p>Error signals flow in reverse so each layer knows how it contributed.</p>
+            </article>
+            <article class="story-card" data-stage>
+              <span>6 · Gradients</span>
+              <strong>Compute change directions</strong>
+              <p>Gradients tell us how each weight should move to reduce the loss.</p>
+            </article>
+            <article class="story-card" data-stage>
+              <span>7 · Update</span>
+              <strong>Nudge the weights</strong>
+              <p>The optimizer applies a small corrective step, usually with learning rate scaling.</p>
+            </article>
+            <article class="story-card" data-stage>
+              <span>8 · Residual connection</span>
+              <strong>Keep the shortcut alive</strong>
+              <p>A bypass path preserves the original signal and adds the learned correction back in.</p>
+            </article>
           </div>
 
-          <div class="lane arrow-line">
-            <span>Embedding</span>
-            <div class="embed-bars" aria-hidden="true">
-              <i></i><i></i><i></i><i></i>
+          <div class="storyboard-visual">
+            <div class="signal-road" aria-hidden="true">
+              <span class="signal-bead"></span>
             </div>
-            <p>Token ids become vectors. This is the first learned lookup table.</p>
-          </div>
-
-          <div class="lane qkv">
-            <span>Q / K / V</span>
-            <div class="qkv-cols">
-              <div><strong>Q</strong><small>What I want</small></div>
-              <div><strong>K</strong><small>How I match</small></div>
-              <div><strong>V</strong><small>What I send</small></div>
-            </div>
-            <div class="attention-map" aria-hidden="true">
-              <i></i><i></i><i></i>
-              <i></i><i></i><i></i>
-              <i></i><i></i><i></i>
+            <div class="signal-caption">
+              <strong data-current-stage>Input</strong>
+              <p data-current-copy>Tokens enter the model and begin the forward pass.</p>
             </div>
           </div>
+        </div>
 
-          <div class="lane">
-            <span>Transformer block</span>
-            <div class="block-stack">
-              <div>Attention</div>
-              <div>Residual add</div>
-              <div>MLP</div>
-            </div>
-            <p>Attention moves information across tokens; the multi-layer perceptron (MLP) reshapes each token.</p>
+        <div class="glossary">
+          <div class="panel-heading compact">
+            <h3>Glossary</h3>
+            <p>The minimum vocabulary that makes the animation click.</p>
+          </div>
+          <div class="glossary-grid">
+            <div><strong>Forward pass</strong><p>The model’s prediction path, left to right.</p></div>
+            <div><strong>Loss</strong><p>How wrong the prediction was.</p></div>
+            <div><strong>Gradient</strong><p>The direction and size of change that reduces loss.</p></div>
+            <div><strong>Residual connection</strong><p>A shortcut path that adds the input back in.</p></div>
           </div>
         </div>
       </section>
