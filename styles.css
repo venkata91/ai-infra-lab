@@ -85,13 +85,28 @@ a:hover { text-decoration: underline; }
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
-.lesson-grid article {
+.lesson-grid article,
+.curriculum article {
   padding: 18px;
   border-radius: 18px;
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.06);
 }
-.lesson-grid h3 { margin: 0 0 8px; color: #f7fbff; }
+.lesson-grid h3, .curriculum h3 { margin: 0 0 8px; color: #f7fbff; }
+.curriculum {
+  margin: 18px 0;
+  padding: 28px;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+.curriculum-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.curriculum ul { margin: 12px 0 0; color: var(--muted); line-height: 1.65; }
 
 .animation-panel { margin: 18px 0; overflow: hidden; }
 .panel-heading { margin-bottom: 18px; }
@@ -216,7 +231,7 @@ a:hover { text-decoration: underline; }
   .grid, .pipeline, .summary-strip { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 640px) {
-  .grid, .pipeline, .summary-strip, .lesson-grid { grid-template-columns: 1fr; }
+  .grid, .pipeline, .summary-strip, .lesson-grid, .curriculum-grid { grid-template-columns: 1fr; }
   .shell { width: min(100% - 20px, 1040px); }
 }
 @media (prefers-reduced-motion: reduce) {

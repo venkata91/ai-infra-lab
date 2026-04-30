@@ -15,6 +15,7 @@ It learns statistical structure from lots of text, then uses that structure to p
 - transformer blocks, residuals, MLPs
 - loss, optimizer, learning rate, checkpoints
 - GPU memory, sequence length, and throughput bottlenecks
+- how to use nanoGPT as a hands-on lab
 
 ## Key concepts
 
@@ -40,7 +41,7 @@ Attention mixes context across tokens; the MLP transforms each token locally.
 The model predicts the next token, compares that guess to the real token, computes loss, and updates weights with backprop + optimizer.
 
 ## Today’s output
-Be able to trace one batch through a tiny GPT-style training step.
+Be able to trace one batch through a tiny GPT-style training step and explain where the main bottlenecks are.
 
 ## Simple mental model
 1. raw text becomes tokens
@@ -55,9 +56,24 @@ Be able to trace one batch through a tiny GPT-style training step.
 ## Hands-on path
 - Read nanoGPT README
 - Watch Karpathy’s GPT-from-scratch video
+- Find the tokenizer, embedding layer, and attention block in code
 - Run a tiny training job
 - Inspect memory, speed, and checkpoints
 - Change one knob at a time
+
+## Exercises
+- Explain Q / K / V in one sentence each
+- Draw the data flow for one token through one transformer block
+- Run a tiny config and note loss after a few steps
+- Increase sequence length and predict what breaks first
+- Reduce batch size and note what changes in memory use
+
+## Exit criteria
+You pass phase 1 when you can:
+- define token, embedding, attention, Q/K/V, residual, MLP
+- trace a batch through GPT-style training from input to checkpoint
+- predict which knob affects memory vs throughput
+- point to the relevant code in nanoGPT without getting lost
 
 ## Citations
 - Karpathy repo: https://github.com/karpathy/nanoGPT

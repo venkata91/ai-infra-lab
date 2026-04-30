@@ -33,8 +33,8 @@
           <p>Most AI infra pain comes from memory, throughput, and sequence length.</p>
         </div>
         <div>
-          <span class="label">What you should know</span>
-          <p>Embeddings, attention, Q/K/V, residuals, MLPs, loss, and optimizer steps.</p>
+          <span class="label">How to use this</span>
+          <p>Read one concept, watch the animation, then do the exercise in Karpathy’s repo.</p>
         </div>
       </section>
 
@@ -151,6 +151,52 @@
           <li>Backprop computes gradients for embeddings, attention, and MLP weights.</li>
           <li>The optimizer updates weights and the cycle repeats millions of times.</li>
         </ul>
+      </section>
+
+      <section class="curriculum">
+        <div class="panel-heading">
+          <h2>Hands-on curriculum</h2>
+          <p>Use nanoGPT as the lab bench. Each checkpoint has a concrete exercise and a pass condition.</p>
+        </div>
+
+        <div class="curriculum-grid">
+          <article>
+            <h3>Checkpoint 1 · Tokens & embeddings</h3>
+            <p>Open nanoGPT and find where text becomes token ids, then where token ids become vectors.</p>
+            <ul>
+              <li>Exercise: trace the tokenizer input/output shape.</li>
+              <li>Exercise: inspect the embedding table size.</li>
+              <li>Pass when: you can explain why the model needs a vocab.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 2 · Attention & QKV</h3>
+            <p>Locate the Q/K/V projections and follow one token through the attention block.</p>
+            <ul>
+              <li>Exercise: identify the three linear layers.</li>
+              <li>Exercise: sketch what each token attends to.</li>
+              <li>Pass when: you can explain query vs key vs value in plain English.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 3 · Tiny training run</h3>
+            <p>Run a small GPT training job and watch loss, speed, and checkpoints change.</p>
+            <ul>
+              <li>Exercise: launch a tiny config in nanoGPT.</li>
+              <li>Exercise: change batch size or sequence length.</li>
+              <li>Pass when: you know what hurts memory and throughput.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 4 · Systems intuition</h3>
+            <p>Compare training tradeoffs: longer context, bigger batch, more layers, more GPU memory.</p>
+            <ul>
+              <li>Exercise: predict the bottleneck before you run.</li>
+              <li>Exercise: observe where the run slows down.</li>
+              <li>Pass when: you can explain why scaling is a systems problem.</li>
+            </ul>
+          </article>
+        </div>
       </section>
 
       <section class="sources" id="reading">
