@@ -1,0 +1,69 @@
+AI Infra Lab, Phase 1 Podcast
+Episode 1: From text to transformer
+
+Welcome to Phase 1.
+
+If you already know data infrastructure, the easiest way to think about modern language model training is this: we are still moving data through a pipeline, but the pipeline has learned parts in the middle.
+
+The job of a large language model is simple to state: predict the next token.
+That tiny sentence hides a lot of machinery, but the core loop is straightforward.
+Raw text becomes tokens. Tokens become embeddings. Embeddings flow through transformer blocks. The model predicts the next token. Loss measures how wrong the prediction was. Backpropagation updates the weights. Then the cycle repeats.
+
+Let’s slow that down.
+
+First: tokens.
+A token is a chunk of text. It might be a full word, part of a word, or punctuation. Models do not read strings the way humans do. They read token ids. That matters because the model needs a fixed vocabulary. It is closer to a lookup table than a document parser.
+
+Second: embeddings.
+Each token id gets mapped to a learned vector. Think of embeddings as the model’s feature space. If tokens are ids, embeddings are their coordinates. This is the first place where meaning starts to show up in the system.
+
+Third: the transformer.
+A transformer is a stack of layers that refines token representations. Inside each layer there are two big jobs. One job mixes information across tokens. That is attention. The other job transforms each token independently. That is the multi-layer perceptron, or MLP, which just means a small feed-forward neural network.
+
+Now attention.
+Attention is the reason transformers are so powerful. It lets each token look at other tokens and decide what matters. If you are reading a sentence, attention is the learned mechanism that says, this earlier word is important, that one is not.
+
+This is where Query, Key, and Value come in.
+For every token, the model makes three projections.
+Query means: what am I looking for?
+Key means: what do I contain that might match?
+Value means: what information should I send if I am selected?
+
+The token’s query is compared against other tokens’ keys. Those comparisons produce weights. The weights decide how much of each value gets mixed in.
+So if you want a short mental model: Query and Key decide where to look. Value decides what you get.
+
+In GPT-style models, attention is causal. That means each token can only look left, not right. The model is not allowed to peek at future tokens. That is what makes next-token prediction honest.
+
+Now the residual path.
+A residual connection adds a layer’s output back to its input. That sounds boring, but it is one of the reasons deep networks train reliably. Instead of asking every layer to rebuild the whole representation, the network just learns a small update.
+
+Training is where the infrastructure mindset starts to matter.
+The model sees a batch of token sequences. It predicts the next token for each position. The difference between prediction and truth becomes loss. Loss drives gradients. Gradients update embeddings, attention weights, and MLP weights.
+
+From a systems perspective, the main bottlenecks are usually not mysterious.
+They are memory, throughput, and sequence length.
+Longer sequences mean more context, but also more work.
+Bigger batches can improve efficiency, but they consume more memory.
+Bigger models can learn more, but they are harder to fit and slower to run.
+That is why AI infrastructure is not just about GPUs. It is about managing tradeoffs.
+
+If you want the hands-on version, use nanoGPT as the lab bench.
+Trace where tokens are created.
+Find the embedding table.
+Find the attention projections.
+Look for Query, Key, and Value.
+Run a tiny training job.
+Then change one knob at a time: sequence length, batch size, learning rate, model width.
+Ask yourself what changed: memory, speed, or loss.
+That is the real lesson.
+
+Here is the exit criteria for Phase 1.
+You should be able to explain what a token is, what an embedding is, what attention does, what Query, Key, and Value mean, what a residual connection is, and what a multi-layer perceptron is.
+You should be able to trace a batch from input text to checkpoint.
+And you should be able to predict which knob will hurt memory and which knob will hurt throughput.
+
+If you can do that, you are ready for the next phase.
+You do not need to memorize everything.
+You just need the map.
+
+End of episode.

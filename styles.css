@@ -110,6 +110,21 @@ a:hover { text-decoration: underline; }
 
 .animation-panel { margin: 18px 0; overflow: hidden; }
 .panel-heading { margin-bottom: 18px; }
+.podcast {
+  margin: 18px 0;
+  padding: 28px;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+.podcast-links { display: flex; gap: 12px; flex-wrap: wrap; }
+.podcast-links a {
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.03);
+}
 .pipeline {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
