@@ -1,7 +1,7 @@
 # Phase 1 — Pretraining fundamentals
 
 ## Goal
-Get comfortable with the building blocks of GPT-style pretraining without getting lost in model hype.
+Get comfortable with the building blocks of Generative Pre-trained Transformer (GPT)-style pretraining without getting lost in model hype.
 
 ## Big idea
 A pretrained language model is just a next-token prediction machine.
@@ -16,7 +16,7 @@ GPT means Generative Pre-trained Transformer.
 - query / key / value mechanics
 - transformer blocks, residuals, and multi-layer perceptrons (MLPs)
 - loss, optimizer, learning rate, checkpoints
-- GPU memory, sequence length, and throughput bottlenecks
+- graphics processing unit (GPU) memory, sequence length, and throughput bottlenecks
 - how to use nanoGPT as a hands-on lab
 
 ## Key concepts
@@ -30,7 +30,7 @@ Each token id maps to a learned vector. This is like a lookup table with trainab
 ### Attention
 Attention lets each token gather context from earlier tokens. It is the model’s routing mechanism.
 
-### Query / Key / Value (Q/K/V)
+### Query / Key / Value
 - **Query**: what this token wants
 - **Key**: how other tokens identify themselves
 - **Value**: the information to pass along
@@ -43,7 +43,7 @@ Attention mixes context across tokens; the multi-layer perceptron transforms eac
 The model predicts the next token, compares that guess to the real token, computes loss, and updates weights with backprop + optimizer.
 
 ## Today’s output
-Be able to trace one batch through a tiny GPT-style training step and explain where the main bottlenecks are.
+Be able to trace one batch through a tiny Generative Pre-trained Transformer (GPT)-style training step and explain where the main bottlenecks are.
 
 ## Simple mental model
 1. raw text becomes tokens
@@ -72,7 +72,7 @@ Be able to trace one batch through a tiny GPT-style training step and explain wh
 
 ## Exit criteria
 You pass phase 1 when you can:
-- define token, embedding, attention, query/key/value, residual, and multi-layer perceptron (MLP)
+- define token, embedding, attention, query, key, value, residual, and multi-layer perceptron (MLP)
 - trace a batch through GPT-style training from input to checkpoint
 - predict which knob affects memory vs throughput
 - point to the relevant code in nanoGPT without getting lost
