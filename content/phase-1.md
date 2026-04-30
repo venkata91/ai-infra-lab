@@ -7,12 +7,14 @@ Get comfortable with the building blocks of GPT-style pretraining without gettin
 A pretrained language model is just a next-token prediction machine.
 It learns statistical structure from lots of text, then uses that structure to predict the next token in a sequence.
 
+GPT means Generative Pre-trained Transformer.
+
 ## What to learn
 - tokenization and vocab size
 - embeddings and learned vector spaces
 - attention and causal masking
-- Query / Key / Value mechanics
-- transformer blocks, residuals, MLPs
+- query / key / value mechanics
+- transformer blocks, residuals, and multi-layer perceptrons (MLPs)
 - loss, optimizer, learning rate, checkpoints
 - GPU memory, sequence length, and throughput bottlenecks
 - how to use nanoGPT as a hands-on lab
@@ -28,14 +30,14 @@ Each token id maps to a learned vector. This is like a lookup table with trainab
 ### Attention
 Attention lets each token gather context from earlier tokens. It is the model’s routing mechanism.
 
-### Q / K / V
+### Query / Key / Value (Q/K/V)
 - **Query**: what this token wants
 - **Key**: how other tokens identify themselves
 - **Value**: the information to pass along
 
 ### Transformer block
-A repeating unit made of attention, residual connections, layer norm, and an MLP.
-Attention mixes context across tokens; the MLP transforms each token locally.
+A repeating unit made of attention, residual connections, layer norm, and a multi-layer perceptron (MLP).
+Attention mixes context across tokens; the multi-layer perceptron transforms each token locally.
 
 ### Training
 The model predicts the next token, compares that guess to the real token, computes loss, and updates weights with backprop + optimizer.
@@ -70,7 +72,7 @@ Be able to trace one batch through a tiny GPT-style training step and explain wh
 
 ## Exit criteria
 You pass phase 1 when you can:
-- define token, embedding, attention, Q/K/V, residual, MLP
+- define token, embedding, attention, query/key/value, residual, and multi-layer perceptron (MLP)
 - trace a batch through GPT-style training from input to checkpoint
 - predict which knob affects memory vs throughput
 - point to the relevant code in nanoGPT without getting lost
