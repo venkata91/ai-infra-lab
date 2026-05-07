@@ -66,3 +66,14 @@ if (storyCards.length && currentStage && currentCopy && signalRoad && signalBead
     renderStage();
   }, 3600);
 }
+
+const loopNodes = Array.from(document.querySelectorAll('[data-loop-node]'));
+if (loopNodes.length) {
+  let loopIndex = 0;
+  setInterval(() => {
+    loopIndex = (loopIndex + 1) % loopNodes.length;
+    loopNodes.forEach((node, i) => {
+      node.classList.toggle('is-active', i === loopIndex);
+    });
+  }, 2200);
+}

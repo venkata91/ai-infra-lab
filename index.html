@@ -4,245 +4,137 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>AI Infra Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&amp;family=Patrick+Hand&amp;display=swap" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <filter id="sketch" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="3"/>
+          <feDisplacementMap in="SourceGraphic" scale="1.4"/>
+        </filter>
+      </defs>
+    </svg>
     <main class="shell">
+      <nav class="phase-nav" aria-label="Phase navigation">
+        <a href="index.html" class="is-active">Home</a>
+        <a href="basics.html">Basics</a>
+        <a href="phase-1.html">Phase 1</a>
+        <a href="phase-2.html">Phase 2</a>
+        <a href="phase-3.html">Phase 3</a>
+        <a href="phase-4.html">Phase 4</a>
+      </nav>
+
       <header class="hero">
-        <p class="kicker">Phase 1 · Pretraining fundamentals</p>
+        <p class="kicker">A 5-phase journey for infra engineers</p>
         <h1>AI Infra Lab</h1>
         <p class="lede">
-          A guided explainer for engineers who know infra already and want the mental model for how large language models are trained.
-          Think of it as a pipeline, but the routing logic is learned.
+          From the building blocks of a neural network to the systems that train and serve frontier models.
+          Each phase has a tight scope, a time budget, and ends with a concrete deliverable.
         </p>
-        <div class="hero-links">
-          <a href="content/phase-1.md">Full phase 1 notes</a>
-          <a href="#concepts">Concepts</a>
-          <a href="#animation">Animated flow</a>
-          <a href="#reading">Reading</a>
-        </div>
       </header>
 
       <section class="summary-strip">
         <div>
           <span class="label">Mental model</span>
-          <p>Raw text → tokens → embeddings → transformer layers → next-token prediction.</p>
-        </div>
-        <div>
-          <span class="label">Why it matters</span>
-          <p>Most AI infrastructure pain comes from memory, throughput, and sequence length.</p>
+          <p>Basics &rarr; pretraining &rarr; scale &rarr; inference &rarr; trade-offs.</p>
         </div>
         <div>
           <span class="label">How to use this</span>
-          <p>Read one concept, watch the animation, then do the exercise in Karpathy’s repo.</p>
+          <p>One phase per week or two. Read, watch, then ship the deliverable. No skipping.</p>
+        </div>
+        <div>
+          <span class="label">Why phases</span>
+          <p>Each phase is a sealed unit. You don&rsquo;t need the next one to put this one to work.</p>
         </div>
       </section>
 
-      <section class="grid" id="concepts">
-        <article class="card pulse">
-          <h2>Tokens</h2>
-          <p>Text is broken into subword pieces so the model can operate on a finite vocabulary.</p>
-        </article>
-        <article class="card pulse delay-1">
-          <h2>Embeddings</h2>
-          <p>Each token becomes a learned vector. Same token, same base vector, every time.</p>
-        </article>
-        <article class="card pulse delay-2">
-          <h2>Attention</h2>
-          <p>Every token decides which other tokens matter most for the current prediction.</p>
-        </article>
-        <article class="card pulse delay-3">
-          <h2>Systems</h2>
-          <p>Training speed is usually limited by graphics processing unit (GPU) memory, batch size, and checkpointing.</p>
-        </article>
-      </section>
-
-      <section class="lesson">
-        <h2>Core concepts</h2>
-        <div class="lesson-grid">
-          <article>
-            <h3>Transformer</h3>
-            <p>
-              A transformer is a stack of layers that repeatedly refines token representations.
-              Attention mixes information across tokens; the multi-layer perceptron (MLP) transforms each token independently.
-              GPT means Generative Pre-trained Transformer.
-            </p>
-          </article>
-          <article>
-            <h3>Query / Key / Value</h3>
-            <p>
-              For each token, the model makes a query, key, and value (Q/K/V).
-              Query asks what to look for, key says how to match, value carries the content.
-            </p>
-          </article>
-          <article>
-            <h3>Causal attention</h3>
-            <p>
-              GPT-style models only look left. A token can use earlier context, not future tokens.
-              That is what makes next-token prediction work.
-            </p>
-          </article>
-          <article>
-            <h3>Residuals</h3>
-            <p>
-              Residual connections add the layer output back to the input so the network can learn
-              small updates instead of rebuilding everything from scratch.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section class="animation-panel" id="animation">
+      <section>
         <div class="panel-heading">
-          <h2>Animated flow</h2>
-          <p>Watch the whole training loop move from input to update, one stage at a time.</p>
+          <h2>The five phases</h2>
+          <p>Click any card to dive in.</p>
         </div>
-
-        <div class="storyboard" data-storyboard>
-          <div class="storyboard-stageboard" aria-label="Training pipeline stages">
-            <article class="story-card is-active" data-stage>
-              <span>1 · Input</span>
-              <strong>Tokens enter the model</strong>
-              <p>Text becomes a sequence of token ids that the network can process.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>2 · Forward pass</span>
-              <strong>Layers transform the signal</strong>
-              <p>The model mixes information forward through embeddings, attention, and MLPs.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>3 · Prediction</span>
-              <strong>Guess the next token</strong>
-              <p>The final layer produces logits, then a probability for each candidate token.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>4 · Loss</span>
-              <strong>Measure the mistake</strong>
-              <p>Compare the guess with the target token to see how wrong the model was.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>5 · Backpropagation</span>
-              <strong>Send error backward</strong>
-              <p>Error signals flow in reverse so each layer knows how it contributed.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>6 · Gradients</span>
-              <strong>Compute change directions</strong>
-              <p>Gradients tell us how each weight should move to reduce the loss.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>7 · Update</span>
-              <strong>Nudge the weights</strong>
-              <p>The optimizer applies a small corrective step, usually with learning rate scaling.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>8 · Residual connection</span>
-              <strong>Keep the shortcut alive</strong>
-              <p>A bypass path preserves the original signal and adds the learned correction back in.</p>
-            </article>
-          </div>
-
-          <div class="storyboard-visual">
-            <div class="signal-road" aria-hidden="true">
-              <span class="signal-bead"></span>
+        <div class="phase-grid">
+          <a class="phase-card" href="basics.html">
+            <span class="phase-num">Basics</span>
+            <h3>Building blocks</h3>
+            <p>Neuron, layer, model, parameters, forward / backward, gradient descent, optimizers, regularization. The foundation under every architecture.</p>
+            <div class="phase-meta">
+              <div><strong>LOE</strong><span>4&ndash;6 hours</span></div>
+              <div><strong>Time</strong><span>a few sittings</span></div>
+              <div><strong>Deliverable</strong><span>explain backprop without notes</span></div>
             </div>
-            <div class="signal-caption">
-              <strong data-current-stage>Input</strong>
-              <p data-current-copy>Tokens enter the model and begin the forward pass.</p>
-            </div>
-          </div>
-        </div>
+          </a>
 
-        <div class="glossary">
-          <div class="panel-heading compact">
-            <h3>Glossary</h3>
-            <p>The minimum vocabulary that makes the animation click.</p>
-          </div>
-          <div class="glossary-grid">
-            <div><strong>Forward pass</strong><p>The model’s prediction path, left to right.</p></div>
-            <div><strong>Loss</strong><p>How wrong the prediction was.</p></div>
-            <div><strong>Gradient</strong><p>The direction and size of change that reduces loss.</p></div>
-            <div><strong>Residual connection</strong><p>A shortcut path that adds the input back in.</p></div>
-          </div>
+          <a class="phase-card" href="phase-1.html">
+            <span class="phase-num">Phase 1</span>
+            <h3>Pretraining fundamentals</h3>
+            <p>Tokens, datasets, loaders, batching, optimizer, checkpoints, GPU basics. Enough to read nanoGPT end to end and run it.</p>
+            <div class="phase-meta">
+              <div><strong>LOE</strong><span>8&ndash;12 hours</span></div>
+              <div><strong>Time</strong><span>1 week</span></div>
+              <div><strong>Deliverable</strong><span>tiny GPT training loop, every component explained</span></div>
+            </div>
+          </a>
+
+          <a class="phase-card" href="phase-2.html">
+            <span class="phase-num">Phase 2</span>
+            <h3>Pretraining systems + scale</h3>
+            <p>Distributed training, sharding, checkpoint recovery, throughput, failure modes. When one GPU is not enough.</p>
+            <div class="phase-meta">
+              <div><strong>LOE</strong><span>12&ndash;16 hours</span></div>
+              <div><strong>Time</strong><span>1&ndash;2 weeks</span></div>
+              <div><strong>Deliverable</strong><span>training stack that handles larger data &amp; longer runs</span></div>
+            </div>
+          </a>
+
+          <a class="phase-card" href="phase-3.html">
+            <span class="phase-num">Phase 3</span>
+            <h3>Inference fundamentals</h3>
+            <p>Serving architecture, latency, batching, KV cache, quantization, autoscaling. From a trained model to a production endpoint.</p>
+            <div class="phase-meta">
+              <div><strong>LOE</strong><span>10&ndash;14 hours</span></div>
+              <div><strong>Time</strong><span>1 week</span></div>
+              <div><strong>Deliverable</strong><span>served open model with measured latency / throughput</span></div>
+            </div>
+          </a>
+
+          <a class="phase-card" href="phase-4.html">
+            <span class="phase-num">Phase 4</span>
+            <h3>Training &rarr; Inference trade-offs</h3>
+            <p>How pretraining choices ripple through serving cost and quality. Distillation, MoE, quantization-aware training, right-sizing.</p>
+            <div class="phase-meta">
+              <div><strong>LOE</strong><span>6&ndash;10 hours</span></div>
+              <div><strong>Time</strong><span>1 week</span></div>
+              <div><strong>Deliverable</strong><span>2&ndash;3 model / config comparison report</span></div>
+            </div>
+          </a>
         </div>
       </section>
 
-      <section class="lesson">
-        <h2>How to think about training</h2>
+      <section class="cadence">
+        <h2>Accountability cadence</h2>
         <ul>
-          <li>The model sees a window of tokens and predicts the next token.</li>
-          <li>Loss measures how wrong the prediction is.</li>
-          <li>Backprop computes gradients for embeddings, attention, and MLP weights.</li>
-          <li>The optimizer updates weights and the cycle repeats millions of times.</li>
+          <li><strong>Weekly checkpoint</strong> &mdash; what shipped, what&rsquo;s blocked, what&rsquo;s next.</li>
+          <li><strong>Cut scope, don&rsquo;t add complexity</strong> &mdash; if you slip a week, reduce ambition before adding tools.</li>
+          <li><strong>Every phase ends with an artifact</strong> &mdash; running code, a benchmark, or a one-pager. Not just notes.</li>
+          <li><strong>Phases are independent</strong> &mdash; you can dip into Phase 3 if inference is what&rsquo;s pressing, even if Phase 2 is half-done.</li>
         </ul>
       </section>
 
-      <section class="curriculum">
-        <div class="panel-heading">
-          <h2>Hands-on curriculum</h2>
-          <p>Use nanoGPT as the lab bench. Each checkpoint has a concrete exercise and a pass condition.</p>
-        </div>
-
-        <div class="curriculum-grid">
-          <article>
-            <h3>Checkpoint 1 · Tokens & embeddings</h3>
-            <p>Open nanoGPT and find where text becomes token ids, then where token ids become vectors.</p>
-            <ul>
-              <li>Exercise: trace the tokenizer input/output shape.</li>
-              <li>Exercise: inspect the embedding table size.</li>
-              <li>Pass when: you can explain why the model needs a vocab.</li>
-            </ul>
-          </article>
-          <article>
-            <h3>Checkpoint 2 · Attention & QKV</h3>
-            <p>Locate the Q/K/V projections and follow one token through the attention block.</p>
-            <ul>
-              <li>Exercise: identify the three linear layers.</li>
-              <li>Exercise: sketch what each token attends to.</li>
-              <li>Pass when: you can explain query vs key vs value in plain English.</li>
-            </ul>
-          </article>
-          <article>
-            <h3>Checkpoint 3 · Tiny training run</h3>
-            <p>Run a small GPT training job and watch loss, speed, and checkpoints change.</p>
-            <ul>
-              <li>Exercise: launch a tiny config in nanoGPT.</li>
-              <li>Exercise: change batch size or sequence length.</li>
-              <li>Pass when: you know what hurts memory and throughput.</li>
-            </ul>
-          </article>
-          <article>
-            <h3>Checkpoint 4 · Systems intuition</h3>
-            <p>Compare training tradeoffs: longer context, bigger batch, more layers, more GPU memory.</p>
-            <ul>
-              <li>Exercise: predict the bottleneck before you run.</li>
-              <li>Exercise: observe where the run slows down.</li>
-              <li>Pass when: you can explain why scaling is a systems problem.</li>
-            </ul>
-          </article>
-        </div>
-      </section>
-
-      <section class="podcast">
-        <div class="panel-heading">
-          <h2>Drive-time podcast</h2>
-          <p>A spoken version of Phase 1 for listening on the road.</p>
-        </div>
-        <div class="podcast-links">
-          <a href="content/phase-1-podcast.txt">Read transcript</a>
-          <a href="media/phase-1-podcast.m4a">Download audio</a>
-        </div>
-      </section>
-
       <section class="sources" id="reading">
-        <h2>Reading</h2>
+        <h2>Source material across phases</h2>
         <ul>
           <li><a href="https://github.com/karpathy/nanoGPT" target="_blank" rel="noreferrer">Karpathy: nanoGPT</a></li>
-          <li><a href="https://www.youtube.com/watch?v=kCc8FmEb1nY" target="_blank" rel="noreferrer">Karpathy: Let’s build GPT from scratch</a></li>
-          <li><a href="https://openai.com/news/research/" target="_blank" rel="noreferrer">OpenAI Research / News</a></li>
-          <li><a href="https://www.anthropic.com/news" target="_blank" rel="noreferrer">Anthropic Newsroom</a></li>
-          <li><a href="https://ai.meta.com/blog/" target="_blank" rel="noreferrer">Meta AI Blog</a></li>
-          <li><a href="https://deepmind.google/blog/" target="_blank" rel="noreferrer">Google DeepMind Blog</a></li>
+          <li><a href="https://www.youtube.com/watch?v=kCc8FmEb1nY" target="_blank" rel="noreferrer">Karpathy: Let&rsquo;s build GPT from scratch</a></li>
+          <li><a href="https://www.youtube.com/@AndrejKarpathy" target="_blank" rel="noreferrer">Karpathy YouTube channel</a></li>
+          <li><a href="https://openai.com/news/research/" target="_blank" rel="noreferrer">OpenAI research / news</a></li>
+          <li><a href="https://www.anthropic.com/news" target="_blank" rel="noreferrer">Anthropic newsroom</a></li>
+          <li><a href="https://ai.meta.com/blog/" target="_blank" rel="noreferrer">Meta AI blog</a></li>
+          <li><a href="https://deepmind.google/blog/" target="_blank" rel="noreferrer">Google DeepMind blog</a></li>
         </ul>
       </section>
     </main>

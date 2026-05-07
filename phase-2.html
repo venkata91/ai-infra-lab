@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Infra Lab · Phase 2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&amp;family=Patrick+Hand&amp;display=swap" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <filter id="sketch" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="3"/>
+          <feDisplacementMap in="SourceGraphic" scale="1.4"/>
+        </filter>
+      </defs>
+    </svg>
+    <main class="shell">
+      <nav class="phase-nav" aria-label="Phase navigation">
+        <a href="index.html">Home</a>
+        <a href="basics.html">Basics</a>
+        <a href="phase-1.html">Phase 1</a>
+        <a href="phase-2.html" class="is-active">Phase 2</a>
+        <a href="phase-3.html">Phase 3</a>
+        <a href="phase-4.html">Phase 4</a>
+      </nav>
+
+      <header class="hero">
+        <p class="kicker">Phase 2 &middot; Pretraining systems + scale</p>
+        <h1>When one GPU is not enough</h1>
+        <p class="lede">
+          Frontier models do not fit in a single GPU. Training spans hundreds or thousands of accelerators talking to each other,
+          surviving worker failures, and squeezing every last token-per-second out of the cluster.
+        </p>
+      </header>
+
+      <section class="scope-strip">
+        <div>
+          <strong>Scope</strong>
+          <span>distributed training, sharding, checkpoint recovery, throughput, failure modes</span>
+        </div>
+        <div>
+          <strong>Time &middot; LOE</strong>
+          <span>1&ndash;2 weeks &middot; 12&ndash;16 hours</span>
+        </div>
+        <div>
+          <strong>Deliverable</strong>
+          <span>modify the training stack to handle larger data and longer runs</span>
+        </div>
+      </section>
+
+      <section class="lesson">
+        <div class="panel-heading">
+          <h2>Why distribute?</h2>
+          <p>A single H100 has 80GB of memory. A 70B-parameter model in fp32 needs ~280GB just for the weights, before optimizer state, gradients, and activations. The math forces you across machines.</p>
+        </div>
+        <div class="lesson-grid fundamentals-grid">
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">data parallelism (DP)</text>
+                <rect x="20"  y="30" width="40" height="58" rx="6" class="v-box"/>
+                <rect x="74"  y="30" width="40" height="58" rx="6" class="v-box" style="animation-delay:.1s"/>
+                <rect x="128" y="30" width="40" height="58" rx="6" class="v-box" style="animation-delay:.2s"/>
+                <rect x="182" y="30" width="40" height="58" rx="6" class="v-box" style="animation-delay:.3s"/>
+                <text x="40"  y="62" text-anchor="middle" class="v-text-strong">M</text>
+                <text x="94"  y="62" text-anchor="middle" class="v-text-strong">M</text>
+                <text x="148" y="62" text-anchor="middle" class="v-text-strong">M</text>
+                <text x="202" y="62" text-anchor="middle" class="v-text-strong">M</text>
+                <text x="40"  y="100" text-anchor="middle" class="v-text">data 1</text>
+                <text x="94"  y="100" text-anchor="middle" class="v-text">data 2</text>
+                <text x="148" y="100" text-anchor="middle" class="v-text">data 3</text>
+                <text x="202" y="100" text-anchor="middle" class="v-text">data 4</text>
+              </svg>
+            </div>
+            <h3>Data parallelism</h3>
+            <p>Every GPU holds the full model. Each gets a different shard of the batch. After the backward pass, gradients are averaged across GPUs (all-reduce). Simple, but every GPU still needs to fit the model.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">tensor parallelism (TP)</text>
+                <rect x="20"  y="30" width="40" height="58" rx="6" class="v-box"/>
+                <rect x="74"  y="30" width="40" height="58" rx="6" class="v-box" style="animation-delay:.1s"/>
+                <rect x="128" y="30" width="40" height="58" rx="6" class="v-box" style="animation-delay:.2s"/>
+                <rect x="182" y="30" width="40" height="58" rx="6" class="v-box" style="animation-delay:.3s"/>
+                <text x="40"  y="62" text-anchor="middle" class="v-text-strong">W1</text>
+                <text x="94"  y="62" text-anchor="middle" class="v-text-strong">W2</text>
+                <text x="148" y="62" text-anchor="middle" class="v-text-strong">W3</text>
+                <text x="202" y="62" text-anchor="middle" class="v-text-strong">W4</text>
+                <text x="120" y="103" text-anchor="middle" class="v-text">one matmul split 4 ways</text>
+              </svg>
+            </div>
+            <h3>Tensor parallelism</h3>
+            <p>Split a single layer&rsquo;s weight matrix across GPUs. Each GPU computes a partial result; an all-reduce stitches them together. Lets the model itself be bigger than any one GPU.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">pipeline parallelism (PP)</text>
+                <rect x="20"  y="40" width="40" height="40" rx="6" class="v-box"/>
+                <line x1="60"  y1="60" x2="74"  y2="60" class="v-edge-flow"/>
+                <rect x="74"  y="40" width="40" height="40" rx="6" class="v-box" style="animation-delay:.2s"/>
+                <line x1="114" y1="60" x2="128" y2="60" class="v-edge-flow" style="animation-delay:.4s"/>
+                <rect x="128" y="40" width="40" height="40" rx="6" class="v-box" style="animation-delay:.4s"/>
+                <line x1="168" y1="60" x2="182" y2="60" class="v-edge-flow" style="animation-delay:.6s"/>
+                <rect x="182" y="40" width="40" height="40" rx="6" class="v-box" style="animation-delay:.6s"/>
+                <text x="40"  y="64" text-anchor="middle" class="v-text-strong">L1</text>
+                <text x="94"  y="64" text-anchor="middle" class="v-text-strong">L2</text>
+                <text x="148" y="64" text-anchor="middle" class="v-text-strong">L3</text>
+                <text x="202" y="64" text-anchor="middle" class="v-text-strong">L4</text>
+                <text x="120" y="100" text-anchor="middle" class="v-text">layers split across GPUs</text>
+              </svg>
+            </div>
+            <h3>Pipeline parallelism</h3>
+            <p>Different GPUs hold different layers. Mini-batches are sliced into micro-batches and pipelined like an assembly line so all stages stay busy.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">FSDP / ZeRO sharding</text>
+                <rect x="20"  y="28" width="50" height="22" rx="4" class="v-weight"/>
+                <rect x="74"  y="28" width="50" height="22" rx="4" class="v-weight" style="animation-delay:.15s"/>
+                <rect x="128" y="28" width="50" height="22" rx="4" class="v-weight" style="animation-delay:.3s"/>
+                <rect x="182" y="28" width="50" height="22" rx="4" class="v-weight" style="animation-delay:.45s"/>
+                <text x="45"  y="44" text-anchor="middle" class="v-text">w-shard</text>
+                <text x="99"  y="44" text-anchor="middle" class="v-text">w-shard</text>
+                <text x="153" y="44" text-anchor="middle" class="v-text">w-shard</text>
+                <text x="207" y="44" text-anchor="middle" class="v-text">w-shard</text>
+                <rect x="20"  y="56" width="50" height="14" rx="3" class="v-weight" style="animation-delay:.05s"/>
+                <rect x="74"  y="56" width="50" height="14" rx="3" class="v-weight" style="animation-delay:.20s"/>
+                <rect x="128" y="56" width="50" height="14" rx="3" class="v-weight" style="animation-delay:.35s"/>
+                <rect x="182" y="56" width="50" height="14" rx="3" class="v-weight" style="animation-delay:.50s"/>
+                <rect x="20"  y="76" width="50" height="14" rx="3" class="v-weight" style="animation-delay:.10s"/>
+                <rect x="74"  y="76" width="50" height="14" rx="3" class="v-weight" style="animation-delay:.25s"/>
+                <rect x="128" y="76" width="50" height="14" rx="3" class="v-weight" style="animation-delay:.40s"/>
+                <rect x="182" y="76" width="50" height="14" rx="3" class="v-weight" style="animation-delay:.55s"/>
+                <text x="45"  y="68" text-anchor="middle" class="v-text">grad</text>
+                <text x="45"  y="88" text-anchor="middle" class="v-text">opt-state</text>
+                <text x="120" y="105" text-anchor="middle" class="v-text">each rank holds 1/N of everything</text>
+              </svg>
+            </div>
+            <h3>FSDP &amp; ZeRO</h3>
+            <p>Shard weights, gradients, and optimizer state across ranks. All-gather just-in-time when computing. Drops per-GPU memory by N&times; at the cost of communication.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">checkpoint &amp; recover</text>
+                <line x1="20" y1="60" x2="220" y2="60" class="v-axis"/>
+                <circle cx="40" cy="60" r="5" class="v-ok"/>
+                <text x="40" y="80" text-anchor="middle" class="v-text">ckpt</text>
+                <circle cx="80" cy="60" r="5" class="v-ok"/>
+                <text x="80" y="80" text-anchor="middle" class="v-text">ckpt</text>
+                <circle cx="125" cy="60" r="5" class="v-fail"/>
+                <text x="125" y="80" text-anchor="middle" class="v-text v-text-red">fail</text>
+                <line x1="125" y1="50" x2="80" y2="50" class="v-edge-flow-back" style="animation-delay:.2s"/>
+                <text x="100" y="44" text-anchor="middle" class="v-text">restart</text>
+                <circle cx="170" cy="60" r="5" class="v-ok"/>
+                <text x="170" y="80" text-anchor="middle" class="v-text">resume</text>
+                <circle cx="210" cy="60" r="5" class="v-ok"/>
+                <text x="210" y="80" text-anchor="middle" class="v-text">ckpt</text>
+              </svg>
+            </div>
+            <h3>Checkpointing &amp; recovery</h3>
+            <p>Long runs see worker failures routinely. Periodic checkpoints (weights + optimizer state + RNG + step) let you resume with minimal lost work. Sharded checkpoints save IO time.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">tokens / sec / GPU (MFU)</text>
+                <line x1="20" y1="92" x2="220" y2="92" class="v-axis"/>
+                <line x1="20" y1="20" x2="20"  y2="92" class="v-axis"/>
+                <rect x="34"  y="62" width="22" height="30" rx="3" class="v-bar-base"/>
+                <rect x="64"  y="50" width="22" height="42" rx="3" class="v-bar-base"/>
+                <rect x="94"  y="36" width="22" height="56" rx="3" class="v-bar-base"/>
+                <rect x="124" y="28" width="22" height="64" rx="3" class="v-bar-base"/>
+                <rect x="154" y="44" width="22" height="48" rx="3" class="v-bar-base"/>
+                <rect x="184" y="60" width="22" height="32" rx="3" class="v-bar-base"/>
+                <text x="120" y="105" text-anchor="middle" class="v-text">batch / seq / parallelism config</text>
+              </svg>
+            </div>
+            <h3>Throughput &amp; MFU</h3>
+            <p>Model FLOP Utilization (MFU) measures how much of the GPU&rsquo;s peak compute you&rsquo;re actually using. 30&ndash;55% MFU is typical at scale. Most of the gap is communication, idle bubbles, and memory-bound ops.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="lesson">
+        <div class="panel-heading">
+          <h2>Failure modes you will see</h2>
+          <p>At scale, the question is not <em>if</em> something fails, but how gracefully you handle it.</p>
+        </div>
+        <ul>
+          <li><strong>OOM mid-step</strong> &mdash; activation memory spikes when sequence length, batch, or recompute config changes. Add gradient checkpointing or shrink batch.</li>
+          <li><strong>Slow worker (straggler)</strong> &mdash; one GPU runs at 70%, the whole cluster waits. Watch step-time variance and isolate the host.</li>
+          <li><strong>Silent NaN</strong> &mdash; loss spikes, gradients explode, weights become NaN. Add gradient clipping and loss-scaling sanity checks.</li>
+          <li><strong>Network partition</strong> &mdash; collectives hang waiting for a peer. Set NCCL timeouts; design for clean restart from checkpoint.</li>
+          <li><strong>Disk pressure</strong> &mdash; checkpoint writes back up, training pauses. Use async checkpointing and dedicated checkpoint storage.</li>
+        </ul>
+      </section>
+
+      <section class="curriculum">
+        <div class="panel-heading">
+          <h2>Hands-on curriculum</h2>
+          <p>Each checkpoint produces a concrete change to your training stack.</p>
+        </div>
+        <div class="curriculum-grid">
+          <article>
+            <h3>Checkpoint 1 &middot; Single-node, multi-GPU DP</h3>
+            <p>Take your nanoGPT-style training loop and run it across 2&ndash;4 GPUs with PyTorch DDP.</p>
+            <ul>
+              <li>Exercise: wrap the model in <code class="inline">DDP</code>, set up <code class="inline">torchrun</code>.</li>
+              <li>Exercise: confirm gradient all-reduce works (gradients match across ranks before optimizer step).</li>
+              <li>Pass when: you can describe the all-reduce in plain English.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 2 &middot; FSDP &amp; activation checkpointing</h3>
+            <p>Switch to FSDP, then add activation checkpointing to fit a bigger model.</p>
+            <ul>
+              <li>Exercise: enable FSDP with full sharding.</li>
+              <li>Exercise: enable activation checkpointing on the transformer block.</li>
+              <li>Pass when: you can run a model that wouldn&rsquo;t fit on a single GPU.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 3 &middot; Robust checkpointing</h3>
+            <p>Save and restore weights, optimizer, scheduler, and RNG state.</p>
+            <ul>
+              <li>Exercise: implement async checkpoint save.</li>
+              <li>Exercise: kill the training mid-step; resume to within a few hundred steps.</li>
+              <li>Pass when: you can lose a worker without losing more than 1 checkpoint of progress.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 4 &middot; Throughput tuning</h3>
+            <p>Measure tokens/sec/GPU and improve it by 1.5&times; without changing model quality.</p>
+            <ul>
+              <li>Exercise: profile one step with <code class="inline">torch.profiler</code>.</li>
+              <li>Exercise: try fused optimizer, mixed precision, and bigger micro-batches.</li>
+              <li>Pass when: you can name the bottleneck (compute / memory bandwidth / communication) for your config.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="sources">
+        <h2>Reading</h2>
+        <ul>
+          <li><a href="https://pytorch.org/docs/stable/fsdp.html" target="_blank" rel="noreferrer">PyTorch FSDP docs</a></li>
+          <li><a href="https://arxiv.org/abs/1910.02054" target="_blank" rel="noreferrer">ZeRO: Memory Optimizations Toward Training Trillion-Parameter Models</a></li>
+          <li><a href="https://arxiv.org/abs/2104.04473" target="_blank" rel="noreferrer">Megatron-LM: parallelism strategies</a></li>
+          <li><a href="https://arxiv.org/abs/2204.02311" target="_blank" rel="noreferrer">PaLM: training infrastructure</a></li>
+          <li><a href="https://github.com/NVIDIA/Megatron-LM" target="_blank" rel="noreferrer">Megatron-LM source</a></li>
+        </ul>
+      </section>
+
+      <nav class="page-footer" aria-label="Pagination">
+        <a class="prev" href="phase-1.html">&larr; Phase 1</a>
+        <a class="next" href="phase-3.html">Phase 3 &rarr;</a>
+      </nav>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

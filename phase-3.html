@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Infra Lab · Phase 3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&amp;family=Patrick+Hand&amp;display=swap" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <filter id="sketch" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="3"/>
+          <feDisplacementMap in="SourceGraphic" scale="1.4"/>
+        </filter>
+      </defs>
+    </svg>
+    <main class="shell">
+      <nav class="phase-nav" aria-label="Phase navigation">
+        <a href="index.html">Home</a>
+        <a href="basics.html">Basics</a>
+        <a href="phase-1.html">Phase 1</a>
+        <a href="phase-2.html">Phase 2</a>
+        <a href="phase-3.html" class="is-active">Phase 3</a>
+        <a href="phase-4.html">Phase 4</a>
+      </nav>
+
+      <header class="hero">
+        <p class="kicker">Phase 3 &middot; Inference fundamentals</p>
+        <h1>Serving the trained model</h1>
+        <p class="lede">
+          Training is one model crunching a fixed dataset. Inference is one model crunching millions of unpredictable user requests.
+          Different problem, different bottlenecks, different tools.
+        </p>
+      </header>
+
+      <section class="scope-strip">
+        <div>
+          <strong>Scope</strong>
+          <span>serving architecture, latency, batching, KV cache, quantization, autoscaling</span>
+        </div>
+        <div>
+          <strong>Time &middot; LOE</strong>
+          <span>1 week &middot; 10&ndash;14 hours</span>
+        </div>
+        <div>
+          <strong>Deliverable</strong>
+          <span>serve an open model and measure latency / throughput</span>
+        </div>
+      </section>
+
+      <section class="lesson">
+        <div class="panel-heading">
+          <h2>Inference is not training</h2>
+          <p>No backward pass, no gradients, no optimizer state. But you do generate one token at a time, and the cost compounds with sequence length.</p>
+        </div>
+        <div class="lesson-grid fundamentals-grid">
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">prefill (parallel) &rarr; decode (sequential)</text>
+                <rect x="22" y="36" width="78" height="40" rx="6" class="v-box"/>
+                <text x="61" y="60" text-anchor="middle" class="v-text-strong">prefill</text>
+                <text x="61" y="92" text-anchor="middle" class="v-text">N tokens at once</text>
+                <line x1="100" y1="56" x2="120" y2="56" class="v-edge-flow" style="animation-delay:.2s"/>
+                <rect x="120" y="44" width="22" height="22" rx="4" class="v-box-back" style="animation-delay:.3s"/>
+                <rect x="146" y="44" width="22" height="22" rx="4" class="v-box-back" style="animation-delay:.5s"/>
+                <rect x="172" y="44" width="22" height="22" rx="4" class="v-box-back" style="animation-delay:.7s"/>
+                <rect x="198" y="44" width="22" height="22" rx="4" class="v-box-back" style="animation-delay:.9s"/>
+                <text x="170" y="80" text-anchor="middle" class="v-text">one token at a time</text>
+              </svg>
+            </div>
+            <h3>Prefill vs decode</h3>
+            <p><strong>Prefill</strong>: all input tokens processed in parallel, compute-bound. <strong>Decode</strong>: each output token waits for the previous, memory-bandwidth-bound. The two phases need different tuning.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">KV cache fills as tokens arrive</text>
+                <rect x="20"  y="40" width="22" height="32" rx="4" class="v-bar-base kv-c1"/>
+                <rect x="46"  y="40" width="22" height="32" rx="4" class="v-bar-base kv-c2"/>
+                <rect x="72"  y="40" width="22" height="32" rx="4" class="v-bar-base kv-c3"/>
+                <rect x="98"  y="40" width="22" height="32" rx="4" class="v-bar-base kv-c4"/>
+                <rect x="124" y="40" width="22" height="32" rx="4" class="v-bar-base kv-c5"/>
+                <rect x="150" y="40" width="22" height="32" rx="4" class="v-bar-base kv-c6"/>
+                <rect x="176" y="40" width="22" height="32" rx="4" class="v-bar-base kv-c7"/>
+                <rect x="202" y="40" width="22" height="32" rx="4" class="v-bar-base kv-c8"/>
+                <text x="120" y="92" text-anchor="middle" class="v-text">grows linearly with context length</text>
+              </svg>
+            </div>
+            <h3>KV cache</h3>
+            <p>Each generated token caches its keys and values so future tokens don&rsquo;t recompute attention over the prefix. The cache grows linearly with context and is often the dominant memory consumer in production.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">continuous batching</text>
+                <rect x="22"  y="26" width="80" height="14" rx="3" class="v-bar-base cb-r1"/>
+                <rect x="40"  y="46" width="120" height="14" rx="3" class="v-bar-base cb-r2"/>
+                <rect x="60"  y="66" width="60" height="14" rx="3" class="v-bar-base cb-r3"/>
+                <rect x="100" y="86" width="100" height="14" rx="3" class="v-bar-base cb-r4"/>
+                <text x="218" y="36" class="v-text">req A</text>
+                <text x="218" y="56" class="v-text">req B</text>
+                <text x="218" y="76" class="v-text">req C</text>
+                <text x="218" y="96" class="v-text">req D</text>
+              </svg>
+            </div>
+            <h3>Continuous batching</h3>
+            <p>Static batching wastes time waiting for the longest request. Continuous batching admits new requests every decode step and evicts finished ones, keeping the GPU saturated.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">bytes per parameter</text>
+                <text x="44" y="40" class="v-text">fp32</text>
+                <rect x="74" y="28" width="120" height="14" rx="3" class="v-bar-base"/>
+                <text x="200" y="40" class="v-text">4 B</text>
+                <text x="44" y="58" class="v-text">fp16</text>
+                <rect x="74" y="46" width="60" height="14" rx="3" class="v-bar-base"/>
+                <text x="140" y="58" class="v-text">2 B</text>
+                <text x="44" y="76" class="v-text">int8</text>
+                <rect x="74" y="64" width="30" height="14" rx="3" class="v-bar-base"/>
+                <text x="110" y="76" class="v-text">1 B</text>
+                <text x="44" y="94" class="v-text">int4</text>
+                <rect x="74" y="82" width="15" height="14" rx="3" class="v-bar-base"/>
+                <text x="95" y="94" class="v-text">0.5 B</text>
+              </svg>
+            </div>
+            <h3>Quantization</h3>
+            <p>Cut memory and bandwidth by storing weights in fewer bits. Modern int8 / int4 schemes (GPTQ, AWQ) keep quality close to fp16 while halving or quartering serving cost.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">latency vs throughput</text>
+                <line x1="22" y1="92" x2="220" y2="92" class="v-axis"/>
+                <line x1="22" y1="22" x2="22"  y2="92" class="v-axis"/>
+                <text x="120" y="105" text-anchor="middle" class="v-text">batch size &rarr;</text>
+                <text x="14"  y="55"  class="v-text" transform="rotate(-90,14,55)">cost</text>
+                <path d="M 30,80 Q 70,75 110,55 T 210,32" fill="none" class="v-curve"/>
+                <text x="160" y="38" class="v-text v-text-cyan">throughput</text>
+                <path d="M 30,82 Q 80,84 130,72 T 210,40" fill="none" class="v-curve-overfit"/>
+                <text x="160" y="62" class="v-text v-text-red">latency</text>
+              </svg>
+            </div>
+            <h3>Latency vs throughput</h3>
+            <p>Bigger batches finish more tokens per second but each user waits longer. <strong>TTFT</strong> (time to first token) and <strong>TPOT</strong> (time per output token) are the two latency numbers users feel.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">autoscaling pods to traffic</text>
+                <line x1="22" y1="92" x2="220" y2="92" class="v-axis"/>
+                <line x1="22" y1="22" x2="22"  y2="92" class="v-axis"/>
+                <path d="M 30,80 Q 60,40 110,30 Q 150,28 180,55 Q 200,72 215,78" fill="none" class="v-loss-train"/>
+                <text x="120" y="32" class="v-text v-text-cyan">traffic</text>
+                <path d="M 30,82 L 50,82 L 50,68 L 90,68 L 90,42 L 130,42 L 130,40 L 170,40 L 170,62 L 200,62 L 200,80 L 215,80" fill="none" class="v-curve-overfit"/>
+                <text x="170" y="60" class="v-text v-text-red">pods</text>
+              </svg>
+            </div>
+            <h3>Autoscaling</h3>
+            <p>Add pods when queue depth or TTFT rises; drain pods when demand falls. Cold starts are painful: pre-warm replicas or accept a brief latency spike on scale-up.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="lesson">
+        <div class="panel-heading">
+          <h2>Optimizations worth knowing</h2>
+        </div>
+        <ul>
+          <li><strong>FlashAttention</strong> &mdash; fused attention kernel; lower memory, higher throughput, no quality cost.</li>
+          <li><strong>Paged KV cache</strong> &mdash; vLLM&rsquo;s trick: allocate KV memory in fixed-size blocks like OS paging, eliminating fragmentation.</li>
+          <li><strong>Speculative decoding</strong> &mdash; a small &ldquo;draft&rdquo; model proposes K tokens, the big model verifies them in parallel. 2&ndash;3&times; speedup on memory-bound decode.</li>
+          <li><strong>Tensor-parallel inference</strong> &mdash; same idea as TP in training, applied at serve time to fit larger models or shrink per-token latency.</li>
+          <li><strong>Prefix caching</strong> &mdash; reuse the KV cache across requests that share a prefix (system prompt, RAG context).</li>
+        </ul>
+      </section>
+
+      <section class="curriculum">
+        <div class="panel-heading">
+          <h2>Hands-on curriculum</h2>
+        </div>
+        <div class="curriculum-grid">
+          <article>
+            <h3>Checkpoint 1 &middot; Serve an open model</h3>
+            <p>Stand up vLLM or TGI in front of a 7B-class open model.</p>
+            <ul>
+              <li>Exercise: send 100 concurrent requests with curl or a benchmark tool.</li>
+              <li>Exercise: read the metrics endpoint.</li>
+              <li>Pass when: you can describe what TTFT and TPOT mean for your service.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 2 &middot; KV cache &amp; long context</h3>
+            <p>Increase context length until you OOM. Find the wall.</p>
+            <ul>
+              <li>Exercise: estimate KV cache size by hand (heads &times; head_dim &times; layers &times; tokens &times; 2 &times; bytes).</li>
+              <li>Exercise: enable paged KV cache and confirm fragmentation drops.</li>
+              <li>Pass when: you can predict OOM before it happens.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 3 &middot; Quantization</h3>
+            <p>Compare fp16, int8, and int4 (GPTQ or AWQ) on the same model.</p>
+            <ul>
+              <li>Exercise: measure latency and quality at each precision.</li>
+              <li>Exercise: pick a target precision for your use case.</li>
+              <li>Pass when: you can argue for a specific precision with numbers.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 4 &middot; Autoscaling under load</h3>
+            <p>Wire your service into Kubernetes HPA or similar; benchmark a traffic ramp.</p>
+            <ul>
+              <li>Exercise: trigger a scale-up; measure time-to-ready.</li>
+              <li>Exercise: tune HPA thresholds against latency SLOs.</li>
+              <li>Pass when: you can describe your cold-start strategy.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="sources">
+        <h2>Reading</h2>
+        <ul>
+          <li><a href="https://github.com/vllm-project/vllm" target="_blank" rel="noreferrer">vLLM</a></li>
+          <li><a href="https://github.com/huggingface/text-generation-inference" target="_blank" rel="noreferrer">Hugging Face TGI</a></li>
+          <li><a href="https://arxiv.org/abs/2205.14135" target="_blank" rel="noreferrer">FlashAttention paper</a></li>
+          <li><a href="https://arxiv.org/abs/2309.06180" target="_blank" rel="noreferrer">PagedAttention / vLLM paper</a></li>
+          <li><a href="https://arxiv.org/abs/2211.17192" target="_blank" rel="noreferrer">Speculative decoding</a></li>
+        </ul>
+      </section>
+
+      <nav class="page-footer" aria-label="Pagination">
+        <a class="prev" href="phase-2.html">&larr; Phase 2</a>
+        <a class="next" href="phase-4.html">Phase 4 &rarr;</a>
+      </nav>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
