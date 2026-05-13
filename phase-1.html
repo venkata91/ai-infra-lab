@@ -122,76 +122,68 @@
       </section>
 
       <section class="animation-panel" id="animation">
-        <div class="panel-heading">
-          <h2>Animated flow</h2>
-          <p>Watch the whole training loop move from input to update, one stage at a time.</p>
+        <div class="panel-heading bytebytego-heading">
+          <span class="section-tag">Animated explainer</span>
+          <h2>The training loop, one frame at a time</h2>
+          <p>One concept highlighted per step: tokens, embeddings, attention, loss, then backward through gradients and a tiny weight nudge.</p>
         </div>
 
         <div class="storyboard" data-storyboard>
-          <div class="storyboard-stageboard" aria-label="Training pipeline stages">
-            <article class="story-card is-active" data-stage>
-              <span>1 &middot; Input</span>
-              <strong>Tokens enter the model</strong>
-              <p>Text becomes a sequence of token ids that the network can process.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>2 &middot; Forward pass</span>
-              <strong>Layers transform the signal</strong>
-              <p>The model mixes information forward through embeddings, attention, and MLPs.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>3 &middot; Prediction</span>
-              <strong>Guess the next token</strong>
-              <p>The final layer produces logits, then a probability for each candidate token.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>4 &middot; Loss</span>
-              <strong>Measure the mistake</strong>
-              <p>Compare the guess with the target token to see how wrong the model was.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>5 &middot; Backpropagation</span>
-              <strong>Send error backward</strong>
-              <p>Error signals flow in reverse so each layer knows how it contributed.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>6 &middot; Gradients</span>
-              <strong>Compute change directions</strong>
-              <p>Gradients tell us how each weight should move to reduce the loss.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>7 &middot; Update</span>
-              <strong>Nudge the weights</strong>
-              <p>The optimizer applies a small corrective step, usually with learning rate scaling.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>8 &middot; Residual connection</span>
-              <strong>Keep the shortcut alive</strong>
-              <p>A bypass path preserves the original signal and adds the learned correction back in.</p>
-            </article>
+          <div class="stage-strip" aria-label="Training pipeline stages">
+            <button class="stage-pill is-active" data-stage-pill type="button"><span>01</span> Input</button>
+            <button class="stage-pill" data-stage-pill type="button"><span>02</span> Forward</button>
+            <button class="stage-pill" data-stage-pill type="button"><span>03</span> Prediction</button>
+            <button class="stage-pill" data-stage-pill type="button"><span>04</span> Loss</button>
+            <button class="stage-pill" data-stage-pill type="button"><span>05</span> Backprop</button>
+            <button class="stage-pill" data-stage-pill type="button"><span>06</span> Gradients</button>
+            <button class="stage-pill" data-stage-pill type="button"><span>07</span> Update</button>
+            <button class="stage-pill" data-stage-pill type="button"><span>08</span> Residual</button>
           </div>
 
-          <div class="storyboard-visual">
-            <div class="signal-road" aria-hidden="true">
-              <span class="signal-bead"></span>
-            </div>
-            <div class="signal-caption">
-              <strong data-current-stage>Input</strong>
-              <p data-current-copy>Tokens enter the model and begin the forward pass.</p>
-            </div>
-          </div>
-        </div>
+          <div class="storyboard-layout">
+            <div class="diagram-card">
+              <div class="diagram-heading">
+                <span class="diagram-kicker" data-current-stage>Input</span>
+                <h3 data-current-title>Tokens enter the model</h3>
+              </div>
 
-        <div class="glossary">
-          <div class="panel-heading compact">
-            <h3>Glossary</h3>
-            <p>The minimum vocabulary that makes the animation click.</p>
+              <div class="pipeline-diagram" data-mode="forward">
+                <div class="diagram-lane lane-forward" aria-hidden="true"></div>
+                <div class="diagram-lane lane-backward" aria-hidden="true"></div>
+                <div class="diagram-lane lane-residual" aria-hidden="true"></div>
+
+                <div class="diagram-nodes">
+                  <div class="diagram-node node-input">Tokens</div>
+                  <div class="diagram-node node-embed">Embedding</div>
+                  <div class="diagram-node node-block">Transformer block</div>
+                  <div class="diagram-node node-logits">Logits</div>
+                  <div class="diagram-node node-softmax">Softmax</div>
+                </div>
+
+                <div class="diagram-packet packet-main"></div>
+                <div class="diagram-packet packet-backward"></div>
+                <div class="diagram-packet packet-residual"></div>
+                <div class="diagram-badge" data-current-badge>forward</div>
+              </div>
+            </div>
+
+            <aside class="detail-card">
+              <p data-current-copy>Text becomes token ids, then the forward pass begins.</p>
+              <ul data-current-bullets></ul>
+            </aside>
           </div>
-          <div class="glossary-grid">
-            <div><strong>Forward pass</strong><p>The model&rsquo;s prediction path, left to right.</p></div>
-            <div><strong>Loss</strong><p>How wrong the prediction was.</p></div>
-            <div><strong>Gradient</strong><p>The direction and size of change that reduces loss.</p></div>
-            <div><strong>Residual connection</strong><p>A shortcut path that adds the input back in.</p></div>
+
+          <div class="glossary">
+            <div class="panel-heading compact">
+              <h3>Glossary</h3>
+              <p>The minimum vocabulary that makes the animation click.</p>
+            </div>
+            <div class="glossary-grid">
+              <div><strong>Forward pass</strong><p>The model&rsquo;s prediction path, left to right.</p></div>
+              <div><strong>Logits</strong><p>Raw next-token scores before softmax.</p></div>
+              <div><strong>Gradient</strong><p>The direction and size of change that reduces loss.</p></div>
+              <div><strong>Residual connection</strong><p>A shortcut path that adds the input back in.</p></div>
+            </div>
           </div>
         </div>
       </section>
