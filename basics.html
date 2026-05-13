@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Infra Lab · Basics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&amp;family=Patrick+Hand&amp;display=swap" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <filter id="sketch" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="3"/>
+          <feDisplacementMap in="SourceGraphic" scale="1.4"/>
+        </filter>
+      </defs>
+    </svg>
+    <main class="shell">
+      <nav class="phase-nav" aria-label="Phase navigation">
+        <a href="index.html">Home</a>
+        <a href="basics.html" class="is-active">Basics</a>
+        <a href="phase-1.html">Phase 1</a>
+        <a href="phase-2.html">Phase 2</a>
+        <a href="phase-3.html">Phase 3</a>
+        <a href="phase-4.html">Phase 4</a>
+      </nav>
+
+      <header class="hero">
+        <p class="kicker">Basics &middot; Foundations</p>
+        <h1>Building blocks</h1>
+        <p class="lede">
+          Before transformers and large language models, every neural network is built from the same handful of pieces.
+          Get these right and the rest is just architecture.
+        </p>
+      </header>
+
+      <section class="lesson fundamentals" id="fundamentals">
+        <p class="sub-heading">Building blocks</p>
+        <div class="lesson-grid fundamentals-grid">
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <line x1="22" y1="20" x2="115" y2="55" class="v-edge-flow"/>
+                <line x1="22" y1="55" x2="115" y2="55" class="v-edge-flow" style="animation-delay:.2s"/>
+                <line x1="22" y1="90" x2="115" y2="55" class="v-edge-flow" style="animation-delay:.4s"/>
+                <text x="50" y="32" class="v-text">w1</text>
+                <text x="50" y="51" class="v-text">w2</text>
+                <text x="50" y="83" class="v-text">w3</text>
+                <circle cx="22" cy="20" r="5" class="v-node"/>
+                <circle cx="22" cy="55" r="5" class="v-node"/>
+                <circle cx="22" cy="90" r="5" class="v-node"/>
+                <circle cx="125" cy="55" r="15" class="v-node-neuron"/>
+                <text x="125" y="59" text-anchor="middle" class="v-text-strong">&#931;</text>
+                <text x="125" y="28" text-anchor="middle" class="v-text">f(w&middot;x+b)</text>
+                <line x1="140" y1="55" x2="218" y2="55" class="v-edge-flow" style="animation-delay:.8s"/>
+                <circle cx="218" cy="55" r="5" class="v-node-output"/>
+              </svg>
+            </div>
+            <h3>Neuron</h3>
+            <p>The smallest unit. Multiplies inputs by weights, adds a bias, then passes the sum through a nonlinear activation like ReLU.</p>
+            <code>y = f(w&middot;x + b)</code>
+          </article>
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <line x1="22" y1="22" x2="125" y2="20" class="v-edge-flow"/>
+                <line x1="22" y1="22" x2="125" y2="46" class="v-edge-flow" style="animation-delay:.05s"/>
+                <line x1="22" y1="22" x2="125" y2="72" class="v-edge-flow" style="animation-delay:.1s"/>
+                <line x1="22" y1="22" x2="125" y2="98" class="v-edge-flow" style="animation-delay:.15s"/>
+                <line x1="22" y1="55" x2="125" y2="20" class="v-edge-flow" style="animation-delay:.2s"/>
+                <line x1="22" y1="55" x2="125" y2="46" class="v-edge-flow" style="animation-delay:.25s"/>
+                <line x1="22" y1="55" x2="125" y2="72" class="v-edge-flow" style="animation-delay:.3s"/>
+                <line x1="22" y1="55" x2="125" y2="98" class="v-edge-flow" style="animation-delay:.35s"/>
+                <line x1="22" y1="88" x2="125" y2="20" class="v-edge-flow" style="animation-delay:.4s"/>
+                <line x1="22" y1="88" x2="125" y2="46" class="v-edge-flow" style="animation-delay:.45s"/>
+                <line x1="22" y1="88" x2="125" y2="72" class="v-edge-flow" style="animation-delay:.5s"/>
+                <line x1="22" y1="88" x2="125" y2="98" class="v-edge-flow" style="animation-delay:.55s"/>
+                <circle cx="22" cy="22" r="4" class="v-node"/>
+                <circle cx="22" cy="55" r="4" class="v-node"/>
+                <circle cx="22" cy="88" r="4" class="v-node"/>
+                <circle cx="125" cy="20" r="6" class="v-node-neuron"/>
+                <circle cx="125" cy="46" r="6" class="v-node-neuron"/>
+                <circle cx="125" cy="72" r="6" class="v-node-neuron"/>
+                <circle cx="125" cy="98" r="6" class="v-node-neuron"/>
+                <line x1="131" y1="20" x2="200" y2="55" class="v-edge-flow" style="animation-delay:.7s"/>
+                <line x1="131" y1="46" x2="200" y2="55" class="v-edge-flow" style="animation-delay:.75s"/>
+                <line x1="131" y1="72" x2="200" y2="55" class="v-edge-flow" style="animation-delay:.8s"/>
+                <line x1="131" y1="98" x2="200" y2="55" class="v-edge-flow" style="animation-delay:.85s"/>
+                <circle cx="205" cy="55" r="5" class="v-node-output"/>
+              </svg>
+            </div>
+            <h3>Layer</h3>
+            <p>A row of neurons that all see the same input. <code class="inline">nn.Linear(in, out)</code> is the canonical example.</p>
+          </article>
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <line x1="20" y1="55" x2="48" y2="55" class="v-edge-flow"/>
+                <rect x="48" y="32" width="36" height="46" rx="6" class="v-box"/>
+                <text x="66" y="58" text-anchor="middle" class="v-text-strong">L1</text>
+                <line x1="84" y1="55" x2="102" y2="55" class="v-edge-flow" style="animation-delay:.3s"/>
+                <rect x="102" y="32" width="36" height="46" rx="6" class="v-box" style="animation-delay:.4s"/>
+                <text x="120" y="58" text-anchor="middle" class="v-text-strong">L2</text>
+                <line x1="138" y1="55" x2="156" y2="55" class="v-edge-flow" style="animation-delay:.6s"/>
+                <rect x="156" y="32" width="36" height="46" rx="6" class="v-box" style="animation-delay:.8s"/>
+                <text x="174" y="58" text-anchor="middle" class="v-text-strong">L3</text>
+                <line x1="192" y1="55" x2="218" y2="55" class="v-edge-flow" style="animation-delay:.9s"/>
+                <circle cx="20" cy="55" r="5" class="v-node"/>
+                <circle cx="222" cy="55" r="5" class="v-node-output"/>
+              </svg>
+            </div>
+            <h3>Model</h3>
+            <p>Layers stacked end to end. A model is a function plus the parameters it has learned.</p>
+          </article>
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">weights updating each step</text>
+                <rect x="20"  y="22" width="22" height="22" rx="4" class="v-weight"/>
+                <rect x="50"  y="22" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.15s"/>
+                <rect x="80"  y="22" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.30s"/>
+                <rect x="110" y="22" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.45s"/>
+                <rect x="140" y="22" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.60s"/>
+                <rect x="170" y="22" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.75s"/>
+                <rect x="200" y="22" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.90s"/>
+                <rect x="20"  y="48" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.05s"/>
+                <rect x="50"  y="48" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.20s"/>
+                <rect x="80"  y="48" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.35s"/>
+                <rect x="110" y="48" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.50s"/>
+                <rect x="140" y="48" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.65s"/>
+                <rect x="170" y="48" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.80s"/>
+                <rect x="200" y="48" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.95s"/>
+                <rect x="20"  y="74" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.10s"/>
+                <rect x="50"  y="74" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.25s"/>
+                <rect x="80"  y="74" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.40s"/>
+                <rect x="110" y="74" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.55s"/>
+                <rect x="140" y="74" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.70s"/>
+                <rect x="170" y="74" width="22" height="22" rx="4" class="v-weight" style="animation-delay:.85s"/>
+                <rect x="200" y="74" width="22" height="22" rx="4" class="v-weight" style="animation-delay:1.00s"/>
+              </svg>
+            </div>
+            <h3>Parameters</h3>
+            <p>Weights and biases. The numbers the optimizer updates. "175B parameters" is how many of these a model carries.</p>
+          </article>
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="60" y="14" text-anchor="middle" class="v-text">deep + narrow</text>
+                <line x1="25" y1="35" x2="50" y2="35" class="v-edge-flow"/>
+                <line x1="25" y1="35" x2="50" y2="80" class="v-edge-flow" style="animation-delay:.05s"/>
+                <line x1="25" y1="80" x2="50" y2="35" class="v-edge-flow" style="animation-delay:.1s"/>
+                <line x1="25" y1="80" x2="50" y2="80" class="v-edge-flow" style="animation-delay:.15s"/>
+                <line x1="50" y1="35" x2="75" y2="35" class="v-edge-flow" style="animation-delay:.2s"/>
+                <line x1="50" y1="35" x2="75" y2="80" class="v-edge-flow" style="animation-delay:.25s"/>
+                <line x1="50" y1="80" x2="75" y2="35" class="v-edge-flow" style="animation-delay:.3s"/>
+                <line x1="50" y1="80" x2="75" y2="80" class="v-edge-flow" style="animation-delay:.35s"/>
+                <line x1="75" y1="35" x2="100" y2="35" class="v-edge-flow" style="animation-delay:.4s"/>
+                <line x1="75" y1="35" x2="100" y2="80" class="v-edge-flow" style="animation-delay:.45s"/>
+                <line x1="75" y1="80" x2="100" y2="35" class="v-edge-flow" style="animation-delay:.5s"/>
+                <line x1="75" y1="80" x2="100" y2="80" class="v-edge-flow" style="animation-delay:.55s"/>
+                <circle cx="25" cy="35" r="4" class="v-node"/>
+                <circle cx="25" cy="80" r="4" class="v-node"/>
+                <circle cx="50" cy="35" r="4" class="v-node-neuron"/>
+                <circle cx="50" cy="80" r="4" class="v-node-neuron"/>
+                <circle cx="75" cy="35" r="4" class="v-node-neuron"/>
+                <circle cx="75" cy="80" r="4" class="v-node-neuron"/>
+                <circle cx="100" cy="35" r="4" class="v-node-output"/>
+                <circle cx="100" cy="80" r="4" class="v-node-output"/>
+                <line x1="120" y1="20" x2="120" y2="100" class="v-axis"/>
+                <text x="180" y="14" text-anchor="middle" class="v-text">shallow + wide</text>
+                <line x1="145" y1="26" x2="220" y2="26" class="v-edge-flow"/>
+                <line x1="145" y1="26" x2="220" y2="62" class="v-edge-flow" style="animation-delay:.05s"/>
+                <line x1="145" y1="44" x2="220" y2="26" class="v-edge-flow" style="animation-delay:.1s"/>
+                <line x1="145" y1="44" x2="220" y2="62" class="v-edge-flow" style="animation-delay:.15s"/>
+                <line x1="145" y1="44" x2="220" y2="98" class="v-edge-flow" style="animation-delay:.2s"/>
+                <line x1="145" y1="62" x2="220" y2="44" class="v-edge-flow" style="animation-delay:.25s"/>
+                <line x1="145" y1="62" x2="220" y2="80" class="v-edge-flow" style="animation-delay:.3s"/>
+                <line x1="145" y1="80" x2="220" y2="44" class="v-edge-flow" style="animation-delay:.35s"/>
+                <line x1="145" y1="80" x2="220" y2="80" class="v-edge-flow" style="animation-delay:.4s"/>
+                <line x1="145" y1="98" x2="220" y2="62" class="v-edge-flow" style="animation-delay:.45s"/>
+                <line x1="145" y1="98" x2="220" y2="98" class="v-edge-flow" style="animation-delay:.5s"/>
+                <circle cx="145" cy="26" r="4" class="v-node"/>
+                <circle cx="145" cy="44" r="4" class="v-node"/>
+                <circle cx="145" cy="62" r="4" class="v-node"/>
+                <circle cx="145" cy="80" r="4" class="v-node"/>
+                <circle cx="145" cy="98" r="4" class="v-node"/>
+                <circle cx="220" cy="26" r="4" class="v-node-output"/>
+                <circle cx="220" cy="44" r="4" class="v-node-output"/>
+                <circle cx="220" cy="62" r="4" class="v-node-output"/>
+                <circle cx="220" cy="80" r="4" class="v-node-output"/>
+                <circle cx="220" cy="98" r="4" class="v-node-output"/>
+              </svg>
+            </div>
+            <h3>Depth vs width</h3>
+            <p>Depth is layers stacked sequentially. Width is neurons per layer. Both increase capacity, in different ways.</p>
+          </article>
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="38" y="14" text-anchor="middle" class="v-text">underfit</text>
+                <line x1="10" y1="92" x2="70" y2="35" class="v-curve"/>
+                <circle cx="18" cy="78" r="2" class="v-data"/>
+                <circle cx="28" cy="58" r="2" class="v-data"/>
+                <circle cx="36" cy="68" r="2" class="v-data"/>
+                <circle cx="46" cy="48" r="2" class="v-data"/>
+                <circle cx="58" cy="55" r="2" class="v-data"/>
+                <circle cx="65" cy="42" r="2" class="v-data"/>
+                <text x="118" y="14" text-anchor="middle" class="v-text">good fit</text>
+                <path d="M 90,80 Q 118,30 150,42" fill="none" class="v-curve"/>
+                <circle cx="98"  cy="78" r="2" class="v-data"/>
+                <circle cx="108" cy="58" r="2" class="v-data"/>
+                <circle cx="116" cy="48" r="2" class="v-data"/>
+                <circle cx="126" cy="38" r="2" class="v-data"/>
+                <circle cx="138" cy="38" r="2" class="v-data"/>
+                <circle cx="146" cy="42" r="2" class="v-data"/>
+                <text x="198" y="14" text-anchor="middle" class="v-text">overfit</text>
+                <path d="M 170,82 L 178,78 L 182,30 L 188,58 L 192,28 L 196,68 L 202,30 L 206,48 L 212,28 L 218,55 L 225,30 L 230,42" fill="none" class="v-curve-overfit"/>
+                <circle cx="178" cy="78" r="2" class="v-data"/>
+                <circle cx="188" cy="58" r="2" class="v-data"/>
+                <circle cx="196" cy="68" r="2" class="v-data"/>
+                <circle cx="206" cy="48" r="2" class="v-data"/>
+                <circle cx="218" cy="55" r="2" class="v-data"/>
+                <circle cx="225" cy="42" r="2" class="v-data"/>
+              </svg>
+            </div>
+            <h3>Capacity</h3>
+            <p>How complex a function the model can represent. Driven by parameter count, depth, width, and architecture.</p>
+          </article>
+        </div>
+
+        <p class="sub-heading">Training mechanics</p>
+        <div class="lesson-grid fundamentals-grid">
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text v-text-cyan">forward &rarr; predictions</text>
+                <line x1="20" y1="60" x2="50" y2="60" class="v-edge-flow"/>
+                <rect x="50" y="40" width="32" height="40" rx="6" class="v-box"/>
+                <line x1="82" y1="60" x2="100" y2="60" class="v-edge-flow" style="animation-delay:.2s"/>
+                <rect x="100" y="40" width="32" height="40" rx="6" class="v-box" style="animation-delay:.3s"/>
+                <line x1="132" y1="60" x2="150" y2="60" class="v-edge-flow" style="animation-delay:.4s"/>
+                <rect x="150" y="40" width="32" height="40" rx="6" class="v-box" style="animation-delay:.6s"/>
+                <line x1="182" y1="60" x2="218" y2="60" class="v-edge-flow" style="animation-delay:.7s"/>
+                <text x="66" y="100" text-anchor="middle" class="v-text">x</text>
+                <text x="116" y="100" text-anchor="middle" class="v-text">h1</text>
+                <text x="166" y="100" text-anchor="middle" class="v-text">h2</text>
+                <text x="222" y="38" text-anchor="middle" class="v-text">y&#770;</text>
+                <circle cx="20" cy="60" r="5" class="v-node"/>
+                <circle cx="222" cy="60" r="5" class="v-node-output"/>
+              </svg>
+            </div>
+            <h3>Forward pass</h3>
+            <p>Run the model on inputs to produce outputs and a loss. Autograd silently records the operations as a graph.</p>
+          </article>
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text v-text-red">backward &larr; gradients</text>
+                <line x1="20" y1="60" x2="50" y2="60" class="v-edge-flow-back"/>
+                <rect x="50" y="40" width="32" height="40" rx="6" class="v-box-back"/>
+                <line x1="82" y1="60" x2="100" y2="60" class="v-edge-flow-back" style="animation-delay:.2s"/>
+                <rect x="100" y="40" width="32" height="40" rx="6" class="v-box-back" style="animation-delay:.3s"/>
+                <line x1="132" y1="60" x2="150" y2="60" class="v-edge-flow-back" style="animation-delay:.4s"/>
+                <rect x="150" y="40" width="32" height="40" rx="6" class="v-box-back" style="animation-delay:.6s"/>
+                <line x1="182" y1="60" x2="218" y2="60" class="v-edge-flow-back" style="animation-delay:.7s"/>
+                <text x="66" y="100" text-anchor="middle" class="v-text">dL/dw1</text>
+                <text x="116" y="100" text-anchor="middle" class="v-text">dL/dw2</text>
+                <text x="166" y="100" text-anchor="middle" class="v-text">dL/dw3</text>
+                <text x="222" y="38" text-anchor="middle" class="v-text v-text-red">L</text>
+                <circle cx="20" cy="60" r="5" class="v-node-back"/>
+                <circle cx="222" cy="60" r="5" class="v-node-back"/>
+              </svg>
+            </div>
+            <h3>Backward pass</h3>
+            <p>Walk that graph in reverse, applying the chain rule. Produces a gradient of loss with respect to every parameter.</p>
+          </article>
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <line x1="20" y1="98" x2="220" y2="98" class="v-axis"/>
+                <text x="120" y="108" text-anchor="middle" class="v-text">parameter</text>
+                <text x="14" y="60" class="v-text">loss</text>
+                <path d="M 30,18 Q 120,140 210,18" fill="none" class="v-curve"/>
+                <circle r="6" cx="0" cy="0" class="v-node-output gd-ball"/>
+              </svg>
+            </div>
+            <h3>Gradient descent</h3>
+            <p>Step parameters in the opposite direction of the gradient. Repeat until loss is low.</p>
+            <code>p &larr; p - lr &middot; grad</code>
+          </article>
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="38" y="14" text-anchor="middle" class="v-text">too small</text>
+                <path d="M 10,22 Q 38,90 66,22" fill="none" class="v-curve"/>
+                <circle r="4" cx="0" cy="0" class="v-node-output lr-small"/>
+                <text x="118" y="14" text-anchor="middle" class="v-text">just right</text>
+                <path d="M 90,22 Q 118,90 146,22" fill="none" class="v-curve"/>
+                <circle r="4" cx="0" cy="0" class="v-node-output lr-good"/>
+                <text x="198" y="14" text-anchor="middle" class="v-text">too large</text>
+                <path d="M 170,22 Q 198,90 226,22" fill="none" class="v-curve"/>
+                <circle r="4" cx="0" cy="0" class="v-node-output lr-large"/>
+              </svg>
+            </div>
+            <h3>Learning rate</h3>
+            <p>How big a step to take. Too small means glacial training; too large means divergence. Often scheduled or adapted.</p>
+          </article>
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">noisy descent on a loss surface</text>
+                <ellipse cx="120" cy="62" rx="100" ry="34" class="v-contour"/>
+                <ellipse cx="120" cy="62" rx="75" ry="25" class="v-contour"/>
+                <ellipse cx="120" cy="62" rx="50" ry="17" class="v-contour"/>
+                <ellipse cx="120" cy="62" rx="25" ry="9" class="v-contour"/>
+                <circle cx="120" cy="62" r="3" class="v-target"/>
+                <path d="M 30,32 L 50,42 L 45,34 L 65,47 L 60,57 L 80,50 L 75,62 L 92,54 L 90,64 L 105,58 L 108,60 L 115,62 L 119,62 L 120,62" fill="none" class="v-noisy-path"/>
+                <circle r="4" class="v-node-output">
+                  <animateMotion dur="4.5s" repeatCount="indefinite" path="M 30,32 L 50,42 L 45,34 L 65,47 L 60,57 L 80,50 L 75,62 L 92,54 L 90,64 L 105,58 L 108,60 L 115,62 L 119,62 L 120,62"/>
+                </circle>
+              </svg>
+            </div>
+            <h3>SGD &amp; optimizers</h3>
+            <p>Stochastic Gradient Descent updates on small random batches. Adam and AdamW add per-parameter adaptive rates and momentum.</p>
+          </article>
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="18" text-anchor="middle" class="v-text">dropout: random neurons disabled each step</text>
+                <circle cx="35"  cy="58" r="9" class="drop-cell drop-d0"/>
+                <circle cx="63"  cy="58" r="9" class="drop-cell drop-d1"/>
+                <circle cx="91"  cy="58" r="9" class="drop-cell drop-d2"/>
+                <circle cx="119" cy="58" r="9" class="drop-cell drop-d3"/>
+                <circle cx="147" cy="58" r="9" class="drop-cell drop-d4"/>
+                <circle cx="175" cy="58" r="9" class="drop-cell drop-d5"/>
+                <circle cx="203" cy="58" r="9" class="drop-cell drop-d6"/>
+                <text x="120" y="100" text-anchor="middle" class="v-text">remaining neurons keep learning</text>
+              </svg>
+            </div>
+            <h3>Regularization</h3>
+            <p>Weight decay penalizes large weights. Dropout randomly disables neurons during training. Both fight overfitting.</p>
+          </article>
+        </div>
+
+        <p class="sub-heading">The training loop</p>
+        <div class="loop-track" data-loop-track>
+          <div class="loop-node is-active" data-loop-node>
+            <span>1 &middot; Forward</span>
+            <strong>pred = model(x)</strong>
+            <p>Inputs flow through layers, producing predictions.</p>
+          </div>
+          <div class="loop-arrow" aria-hidden="true">&rarr;</div>
+          <div class="loop-node" data-loop-node>
+            <span>2 &middot; Loss</span>
+            <strong>loss = loss_fn(pred, y)</strong>
+            <p>How wrong the prediction was, as a single number.</p>
+          </div>
+          <div class="loop-arrow" aria-hidden="true">&rarr;</div>
+          <div class="loop-node" data-loop-node>
+            <span>3 &middot; Backward</span>
+            <strong>loss.backward()</strong>
+            <p>Gradients computed for every parameter via the chain rule.</p>
+          </div>
+          <div class="loop-arrow" aria-hidden="true">&rarr;</div>
+          <div class="loop-node" data-loop-node>
+            <span>4 &middot; Step</span>
+            <strong>optimizer.step()</strong>
+            <p>Parameters nudged in the direction that lowers loss. Then repeat.</p>
+          </div>
+        </div>
+
+        <div class="overfit-callout">
+          <div class="overfit-viz" aria-hidden="true">
+            <svg viewBox="0 0 240 80" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+              <line x1="14" y1="68" x2="230" y2="68" class="v-axis"/>
+              <line x1="14" y1="10" x2="14" y2="68" class="v-axis"/>
+              <text x="120" y="78" text-anchor="middle" class="v-text">epoch &rarr;</text>
+              <path d="M 20,18 Q 60,32 110,46 T 224,60" fill="none" class="v-loss-train"/>
+              <text x="200" y="56" class="v-text v-text-cyan">train</text>
+              <path d="M 20,18 Q 60,34 110,32 T 224,10" fill="none" class="v-loss-val"/>
+              <text x="200" y="14" class="v-text v-text-red">val</text>
+              <line x1="115" y1="10" x2="115" y2="68" class="v-marker"/>
+              <text x="120" y="20" class="v-text">stop here</text>
+            </svg>
+          </div>
+          <h3>Overfitting, validation, and double descent</h3>
+          <p>
+            Training loss going to zero is usually a trap. The model has memorized noise instead of learning the pattern.
+            Hold out a validation set, watch its loss every epoch, and stop when it starts climbing.
+          </p>
+          <p>
+            <strong>Double descent</strong> is a modern surprise: very large overparameterized models often generalize
+            <em>better</em> than mid-sized ones, even though classical theory predicts the opposite. SGD's implicit
+            preference for flat, low-magnitude solutions is part of why scale keeps working.
+          </p>
+        </div>
+
+        <div class="more-link">
+          <a href="content/fundamentals.md">Full fundamentals notes &amp; worked example</a>
+        </div>
+      </section>
+
+      <nav class="page-footer" aria-label="Pagination">
+        <a class="prev" href="index.html">&larr; Home</a>
+        <a class="next" href="phase-1.html">Phase 1 &rarr;</a>
+      </nav>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

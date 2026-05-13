@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Infra Lab · Phase 1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&amp;family=Patrick+Hand&amp;display=swap" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <filter id="sketch" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="3"/>
+          <feDisplacementMap in="SourceGraphic" scale="1.4"/>
+        </filter>
+      </defs>
+    </svg>
+    <main class="shell">
+      <nav class="phase-nav" aria-label="Phase navigation">
+        <a href="index.html">Home</a>
+        <a href="basics.html">Basics</a>
+        <a href="phase-1.html" class="is-active">Phase 1</a>
+        <a href="phase-2.html">Phase 2</a>
+        <a href="phase-3.html">Phase 3</a>
+        <a href="phase-4.html">Phase 4</a>
+      </nav>
+
+      <header class="hero">
+        <p class="kicker">Phase 1 &middot; Pretraining fundamentals</p>
+        <h1>How LLMs learn</h1>
+        <p class="lede">
+          Tokens, embeddings, attention, and the training loop. The mental model engineers need before they can reason about
+          memory, throughput, and sequence length.
+        </p>
+      </header>
+
+      <section class="scope-strip">
+        <div>
+          <strong>Scope</strong>
+          <span>tokens, datasets, loaders, batching, optimizer, checkpoints, GPU basics</span>
+        </div>
+        <div>
+          <strong>Time &middot; LOE</strong>
+          <span>1 week &middot; 8&ndash;12 hours</span>
+        </div>
+        <div>
+          <strong>Deliverable</strong>
+          <span>run a tiny GPT-style training loop and explain every component</span>
+        </div>
+      </section>
+
+      <section class="summary-strip">
+        <div>
+          <span class="label">Mental model</span>
+          <p>Raw text &rarr; tokens &rarr; embeddings &rarr; transformer layers &rarr; next-token prediction.</p>
+        </div>
+        <div>
+          <span class="label">Why it matters</span>
+          <p>Most AI infrastructure pain comes from memory, throughput, and sequence length.</p>
+        </div>
+        <div>
+          <span class="label">How to use this</span>
+          <p>Read one concept, watch the animation, then do the exercise in Karpathy&rsquo;s repo.</p>
+        </div>
+      </section>
+
+      <section class="grid" id="concepts">
+        <article class="card pulse">
+          <h2>Tokens</h2>
+          <p>Text is broken into subword pieces so the model can operate on a finite vocabulary.</p>
+        </article>
+        <article class="card pulse delay-1">
+          <h2>Embeddings</h2>
+          <p>Each token becomes a learned vector. Same token, same base vector, every time.</p>
+        </article>
+        <article class="card pulse delay-2">
+          <h2>Attention</h2>
+          <p>Every token decides which other tokens matter most for the current prediction.</p>
+        </article>
+        <article class="card pulse delay-3">
+          <h2>Systems</h2>
+          <p>Training speed is usually limited by GPU memory, batch size, and checkpointing.</p>
+        </article>
+      </section>
+
+      <section class="lesson">
+        <h2>Core concepts</h2>
+        <div class="lesson-grid">
+          <article>
+            <h3>Transformer</h3>
+            <p>
+              A transformer is a stack of layers that repeatedly refines token representations.
+              Attention mixes information across tokens; the multi-layer perceptron (MLP) transforms each token independently.
+              GPT means Generative Pre-trained Transformer.
+            </p>
+          </article>
+          <article>
+            <h3>Query / Key / Value</h3>
+            <p>
+              For each token, the model makes a query, key, and value (Q/K/V).
+              Query asks what to look for, key says how to match, value carries the content.
+            </p>
+          </article>
+          <article>
+            <h3>Causal attention</h3>
+            <p>
+              GPT-style models only look left. A token can use earlier context, not future tokens.
+              That is what makes next-token prediction work.
+            </p>
+          </article>
+          <article>
+            <h3>Residuals</h3>
+            <p>
+              Residual connections add the layer output back to the input so the network can learn
+              small updates instead of rebuilding everything from scratch.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="animation-panel" id="animation">
+        <div class="panel-heading">
+          <h2>Animated flow</h2>
+          <p>Watch the whole training loop move from input to update, one stage at a time.</p>
+        </div>
+
+        <div class="storyboard" data-storyboard>
+          <div class="storyboard-stageboard" aria-label="Training pipeline stages">
+            <article class="story-card is-active" data-stage>
+              <span>1 &middot; Input</span>
+              <strong>Tokens enter the model</strong>
+              <p>Text becomes a sequence of token ids that the network can process.</p>
+            </article>
+            <article class="story-card" data-stage>
+              <span>2 &middot; Forward pass</span>
+              <strong>Layers transform the signal</strong>
+              <p>The model mixes information forward through embeddings, attention, and MLPs.</p>
+            </article>
+            <article class="story-card" data-stage>
+              <span>3 &middot; Prediction</span>
+              <strong>Guess the next token</strong>
+              <p>The final layer produces logits, then a probability for each candidate token.</p>
+            </article>
+            <article class="story-card" data-stage>
+              <span>4 &middot; Loss</span>
+              <strong>Measure the mistake</strong>
+              <p>Compare the guess with the target token to see how wrong the model was.</p>
+            </article>
+            <article class="story-card" data-stage>
+              <span>5 &middot; Backpropagation</span>
+              <strong>Send error backward</strong>
+              <p>Error signals flow in reverse so each layer knows how it contributed.</p>
+            </article>
+            <article class="story-card" data-stage>
+              <span>6 &middot; Gradients</span>
+              <strong>Compute change directions</strong>
+              <p>Gradients tell us how each weight should move to reduce the loss.</p>
+            </article>
+            <article class="story-card" data-stage>
+              <span>7 &middot; Update</span>
+              <strong>Nudge the weights</strong>
+              <p>The optimizer applies a small corrective step, usually with learning rate scaling.</p>
+            </article>
+            <article class="story-card" data-stage>
+              <span>8 &middot; Residual connection</span>
+              <strong>Keep the shortcut alive</strong>
+              <p>A bypass path preserves the original signal and adds the learned correction back in.</p>
+            </article>
+          </div>
+
+          <div class="storyboard-visual">
+            <div class="signal-road" aria-hidden="true">
+              <span class="signal-bead"></span>
+            </div>
+            <div class="signal-caption">
+              <strong data-current-stage>Input</strong>
+              <p data-current-copy>Tokens enter the model and begin the forward pass.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="glossary">
+          <div class="panel-heading compact">
+            <h3>Glossary</h3>
+            <p>The minimum vocabulary that makes the animation click.</p>
+          </div>
+          <div class="glossary-grid">
+            <div><strong>Forward pass</strong><p>The model&rsquo;s prediction path, left to right.</p></div>
+            <div><strong>Loss</strong><p>How wrong the prediction was.</p></div>
+            <div><strong>Gradient</strong><p>The direction and size of change that reduces loss.</p></div>
+            <div><strong>Residual connection</strong><p>A shortcut path that adds the input back in.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson">
+        <h2>How to think about training</h2>
+        <ul>
+          <li>The model sees a window of tokens and predicts the next token.</li>
+          <li>Loss measures how wrong the prediction is.</li>
+          <li>Backprop computes gradients for embeddings, attention, and MLP weights.</li>
+          <li>The optimizer updates weights and the cycle repeats millions of times.</li>
+        </ul>
+      </section>
+
+      <section class="curriculum">
+        <div class="panel-heading">
+          <h2>Hands-on curriculum</h2>
+          <p>Use nanoGPT as the lab bench. Each checkpoint has a concrete exercise and a pass condition.</p>
+        </div>
+
+        <div class="curriculum-grid">
+          <article>
+            <h3>Checkpoint 1 &middot; Tokens &amp; embeddings</h3>
+            <p>Open nanoGPT and find where text becomes token ids, then where token ids become vectors.</p>
+            <ul>
+              <li>Exercise: trace the tokenizer input/output shape.</li>
+              <li>Exercise: inspect the embedding table size.</li>
+              <li>Pass when: you can explain why the model needs a vocab.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 2 &middot; Attention &amp; QKV</h3>
+            <p>Locate the Q/K/V projections and follow one token through the attention block.</p>
+            <ul>
+              <li>Exercise: identify the three linear layers.</li>
+              <li>Exercise: sketch what each token attends to.</li>
+              <li>Pass when: you can explain query vs key vs value in plain English.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 3 &middot; Tiny training run</h3>
+            <p>Run a small GPT training job and watch loss, speed, and checkpoints change.</p>
+            <ul>
+              <li>Exercise: launch a tiny config in nanoGPT.</li>
+              <li>Exercise: change batch size or sequence length.</li>
+              <li>Pass when: you know what hurts memory and throughput.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 4 &middot; Systems intuition</h3>
+            <p>Compare training tradeoffs: longer context, bigger batch, more layers, more GPU memory.</p>
+            <ul>
+              <li>Exercise: predict the bottleneck before you run.</li>
+              <li>Exercise: observe where the run slows down.</li>
+              <li>Pass when: you can explain why scaling is a systems problem.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="sources">
+        <h2>Reading</h2>
+        <ul>
+          <li><a href="content/phase-1.md">Full phase 1 notes</a></li>
+          <li><a href="https://github.com/karpathy/nanoGPT" target="_blank" rel="noreferrer">Karpathy: nanoGPT</a></li>
+          <li><a href="https://www.youtube.com/watch?v=kCc8FmEb1nY" target="_blank" rel="noreferrer">Karpathy: Let&rsquo;s build GPT from scratch</a></li>
+        </ul>
+      </section>
+
+      <nav class="page-footer" aria-label="Pagination">
+        <a class="prev" href="basics.html">&larr; Basics</a>
+        <a class="next" href="phase-2.html">Phase 2 &rarr;</a>
+      </nav>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

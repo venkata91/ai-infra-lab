@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Infra Lab · Phase 4</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&amp;family=Patrick+Hand&amp;display=swap" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <filter id="sketch" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="3"/>
+          <feDisplacementMap in="SourceGraphic" scale="1.4"/>
+        </filter>
+      </defs>
+    </svg>
+    <main class="shell">
+      <nav class="phase-nav" aria-label="Phase navigation">
+        <a href="index.html">Home</a>
+        <a href="basics.html">Basics</a>
+        <a href="phase-1.html">Phase 1</a>
+        <a href="phase-2.html">Phase 2</a>
+        <a href="phase-3.html">Phase 3</a>
+        <a href="phase-4.html" class="is-active">Phase 4</a>
+      </nav>
+
+      <header class="hero">
+        <p class="kicker">Phase 4 &middot; Training &rarr; Inference trade-offs</p>
+        <h1>Choices made once, paid for forever</h1>
+        <p class="lede">
+          Every decision during pretraining echoes through every inference request for the lifetime of the model.
+          This phase teaches you to make those choices on purpose.
+        </p>
+      </header>
+
+      <section class="scope-strip">
+        <div>
+          <strong>Scope</strong>
+          <span>how pretraining choices affect serving cost and quality</span>
+        </div>
+        <div>
+          <strong>Time &middot; LOE</strong>
+          <span>1 week &middot; 6&ndash;10 hours</span>
+        </div>
+        <div>
+          <strong>Deliverable</strong>
+          <span>compare 2&ndash;3 model / config choices and justify the trade-offs</span>
+        </div>
+      </section>
+
+      <section class="lesson">
+        <div class="panel-heading">
+          <h2>Trade-offs in pictures</h2>
+          <p>Bigger isn&rsquo;t always better. The right model is the smallest one that hits your quality bar at your serving cost.</p>
+        </div>
+        <div class="lesson-grid fundamentals-grid">
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">quality vs cost (model size)</text>
+                <line x1="22" y1="92" x2="220" y2="92" class="v-axis"/>
+                <line x1="22" y1="22" x2="22"  y2="92" class="v-axis"/>
+                <text x="120" y="105" text-anchor="middle" class="v-text">$ / 1M tokens &rarr;</text>
+                <text x="14"  y="55"  class="v-text" transform="rotate(-90,14,55)">quality</text>
+                <path d="M 30,80 Q 90,55 140,40 Q 180,32 210,30" fill="none" class="v-curve"/>
+                <circle cx="50"  cy="72" r="4" class="v-node"/>
+                <text x="64" y="74" class="v-text">7B</text>
+                <circle cx="100" cy="50" r="6" class="v-node"/>
+                <text x="114" y="52" class="v-text">13B</text>
+                <circle cx="170" cy="36" r="9" class="v-node-output"/>
+                <text x="183" y="38" class="v-text">70B</text>
+              </svg>
+            </div>
+            <h3>Quality vs cost</h3>
+            <p>Bigger model = more quality, more cost per token. The curve is sub-linear: doubling model size rarely doubles quality. Find the inflection point for your task.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">distillation</text>
+                <rect x="20" y="32" width="80" height="58" rx="10" class="v-box"/>
+                <text x="60" y="60" text-anchor="middle" class="v-text-strong">teacher</text>
+                <text x="60" y="78" text-anchor="middle" class="v-text">large &middot; expensive</text>
+                <line x1="100" y1="60" x2="140" y2="60" class="v-edge-flow"/>
+                <text x="120" y="52" text-anchor="middle" class="v-text">copies behavior</text>
+                <rect x="140" y="44" width="62" height="34" rx="8" class="v-box-back"/>
+                <text x="171" y="64" text-anchor="middle" class="v-text-strong">student</text>
+              </svg>
+            </div>
+            <h3>Distillation</h3>
+            <p>Train a small &ldquo;student&rdquo; to match a large &ldquo;teacher&rdquo;&rsquo;s outputs (logits or behavior). Result: serve a 7B that often beats a vanilla 7B because it learned from a 70B&rsquo;s judgments.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">mixture of experts (MoE)</text>
+                <circle cx="32" cy="62" r="6" class="v-node"/>
+                <text x="32" y="86" text-anchor="middle" class="v-text">input</text>
+                <line x1="38" y1="62" x2="68" y2="62" class="v-edge-flow"/>
+                <rect x="68" y="48" width="40" height="28" rx="6" class="v-box"/>
+                <text x="88" y="66" text-anchor="middle" class="v-text-strong">router</text>
+                <line x1="108" y1="58" x2="138" y2="32" class="v-edge-flow" style="animation-delay:.2s"/>
+                <line x1="108" y1="62" x2="138" y2="50" class="v-edge-flow" style="animation-delay:.3s"/>
+                <line x1="108" y1="66" x2="138" y2="68" class="v-edge-flow" style="animation-delay:.4s"/>
+                <line x1="108" y1="70" x2="138" y2="86" class="v-edge-flow" style="animation-delay:.5s"/>
+                <circle cx="146" cy="32" r="8" class="v-node-neuron"/>
+                <circle cx="146" cy="50" r="8" class="v-node-output"/>
+                <circle cx="146" cy="68" r="8" class="v-node-neuron"/>
+                <circle cx="146" cy="86" r="8" class="v-node-output"/>
+                <text x="200" y="56" class="v-text">2 of 4 active</text>
+              </svg>
+            </div>
+            <h3>Mixture of Experts</h3>
+            <p>N expert sub-models, but a router activates only top-K per token. More <em>total</em> parameters (more capacity) at the same <em>active</em> compute cost. Used in Mixtral, GPT-4-class systems.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">quantization-aware training</text>
+                <text x="58" y="38" text-anchor="middle" class="v-text">post-training quant</text>
+                <rect x="22" y="44" width="40" height="14" rx="3" class="v-bar-base"/>
+                <line x1="62" y1="51" x2="80" y2="51" class="v-edge-flow"/>
+                <rect x="80" y="44" width="20" height="14" rx="3" class="v-bar-base"/>
+                <text x="105" y="54" class="v-text">quality drops</text>
+                <text x="58" y="78" text-anchor="middle" class="v-text">QAT (trained at low bits)</text>
+                <rect x="22" y="84" width="40" height="14" rx="3" class="v-bar-base"/>
+                <line x1="62" y1="91" x2="80" y2="91" class="v-edge-flow"/>
+                <rect x="80" y="84" width="20" height="14" rx="3" class="v-box"/>
+                <text x="105" y="94" class="v-text">quality holds</text>
+              </svg>
+            </div>
+            <h3>Quantization-aware training</h3>
+            <p>Simulate quantization during training so the model learns to be robust to it. Costs more training; recovers nearly all of the quality you&rsquo;d lose to post-training quantization.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">context length cost (KV at serve)</text>
+                <line x1="22" y1="92" x2="220" y2="92" class="v-axis"/>
+                <line x1="22" y1="22" x2="22"  y2="92" class="v-axis"/>
+                <path d="M 30,82 L 60,76 L 90,68 L 120,55 L 150,38 L 180,25 L 210,18" fill="none" class="v-curve"/>
+                <text x="60"  y="100" text-anchor="middle" class="v-text">2k</text>
+                <text x="120" y="100" text-anchor="middle" class="v-text">32k</text>
+                <text x="180" y="100" text-anchor="middle" class="v-text">128k</text>
+                <text x="190" y="30"  class="v-text v-text-red">$$$</text>
+              </svg>
+            </div>
+            <h3>Context length isn&rsquo;t free</h3>
+            <p>Training on 32k context costs more than 2k. Serving 128k costs <em>much</em> more &mdash; KV cache scales linearly with context, attention scales quadratically. Pick the shortest context that meets your needs.</p>
+          </article>
+
+          <article>
+            <div class="viz" aria-hidden="true">
+              <svg viewBox="0 0 240 110" class="viz-svg" preserveAspectRatio="xMidYMid meet">
+                <text x="120" y="14" text-anchor="middle" class="v-text">match model size to use case</text>
+                <rect x="20"  y="30" width="60" height="58" rx="10" class="v-box"/>
+                <text x="50"  y="52" text-anchor="middle" class="v-text-strong">small</text>
+                <text x="50"  y="70" text-anchor="middle" class="v-text">classify</text>
+                <text x="50"  y="82" text-anchor="middle" class="v-text">extract</text>
+                <rect x="90"  y="30" width="60" height="58" rx="10" class="v-box-back"/>
+                <text x="120" y="52" text-anchor="middle" class="v-text-strong">medium</text>
+                <text x="120" y="70" text-anchor="middle" class="v-text">RAG chat</text>
+                <text x="120" y="82" text-anchor="middle" class="v-text">summarize</text>
+                <rect x="160" y="30" width="60" height="58" rx="10" class="v-box"/>
+                <text x="190" y="52" text-anchor="middle" class="v-text-strong">large</text>
+                <text x="190" y="70" text-anchor="middle" class="v-text">reasoning</text>
+                <text x="190" y="82" text-anchor="middle" class="v-text">agent</text>
+              </svg>
+            </div>
+            <h3>Right-sizing by use case</h3>
+            <p>A classification model doesn&rsquo;t need 70B. A reasoning agent might. Map your task to the smallest model that hits the quality bar; revisit when models or hardware improve.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="lesson">
+        <div class="panel-heading">
+          <h2>The questions you should be able to answer</h2>
+        </div>
+        <ul>
+          <li>What does the next 100&times; in tokens-per-second buy you (latency, cost, scale)?</li>
+          <li>If you halve the model size, how much quality do you actually lose on your benchmark?</li>
+          <li>If you add 4&times; the context length, what breaks first &mdash; training time, GPU memory at serve, or attention cost?</li>
+          <li>Distill or quantize: which buys you more, and at what training cost?</li>
+          <li>How does MoE change your story (training hardware, inference hardware, scheduler complexity)?</li>
+        </ul>
+      </section>
+
+      <section class="curriculum">
+        <div class="panel-heading">
+          <h2>Hands-on curriculum</h2>
+        </div>
+        <div class="curriculum-grid">
+          <article>
+            <h3>Checkpoint 1 &middot; Quality vs cost study</h3>
+            <p>Pick a benchmark. Run 7B / 13B / 70B (or three open models you have access to).</p>
+            <ul>
+              <li>Exercise: report quality and cost-per-million-tokens for each.</li>
+              <li>Exercise: pick the right model for a hypothetical use case.</li>
+              <li>Pass when: you can defend the choice with numbers, not vibes.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 2 &middot; Distillation</h3>
+            <p>Use a strong teacher to fine-tune a smaller student on your task.</p>
+            <ul>
+              <li>Exercise: collect teacher outputs on a corpus.</li>
+              <li>Exercise: fine-tune student on teacher outputs.</li>
+              <li>Pass when: distilled student beats vanilla student of the same size.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 3 &middot; Quantization comparison</h3>
+            <p>Take one model, three precisions: fp16, int8, int4.</p>
+            <ul>
+              <li>Exercise: benchmark quality (your eval) and cost (tokens/sec/dollar).</li>
+              <li>Exercise: identify the precision wall for your use case.</li>
+              <li>Pass when: you can recommend a default precision and justify it.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Checkpoint 4 &middot; Final report</h3>
+            <p>Produce a one-pager comparing 2&ndash;3 model / config choices for a real internal use case.</p>
+            <ul>
+              <li>Exercise: tabulate quality, latency, cost, ops complexity.</li>
+              <li>Exercise: make a recommendation with caveats.</li>
+              <li>Pass when: a non-ML engineer can read your report and know what to do.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="sources">
+        <h2>Reading</h2>
+        <ul>
+          <li><a href="https://arxiv.org/abs/2203.15556" target="_blank" rel="noreferrer">Chinchilla scaling laws</a></li>
+          <li><a href="https://arxiv.org/abs/2401.04088" target="_blank" rel="noreferrer">Mixtral 8x7B (MoE in production)</a></li>
+          <li><a href="https://arxiv.org/abs/1503.02531" target="_blank" rel="noreferrer">Hinton: knowledge distillation</a></li>
+          <li><a href="https://arxiv.org/abs/2306.00978" target="_blank" rel="noreferrer">AWQ: activation-aware weight quantization</a></li>
+          <li><a href="https://arxiv.org/abs/2210.17323" target="_blank" rel="noreferrer">GPTQ</a></li>
+        </ul>
+      </section>
+
+      <nav class="page-footer" aria-label="Pagination">
+        <a class="prev" href="phase-3.html">&larr; Phase 3</a>
+        <a class="next" href="index.html">Back home &rarr;</a>
+      </nav>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
