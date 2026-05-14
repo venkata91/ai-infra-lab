@@ -124,61 +124,49 @@
       <section class="animation-panel" id="animation">
         <div class="panel-heading">
           <h2>Animated flow</h2>
-          <p>Watch the whole training loop move from input to update, one stage at a time.</p>
+          <p>Each stage of the training loop, highlighted in turn. Same card vocabulary as Basics, with twice as many stops.</p>
         </div>
 
-        <div class="storyboard" data-storyboard>
-          <div class="storyboard-stageboard" aria-label="Training pipeline stages">
-            <article class="story-card is-active" data-stage>
-              <span>1 &middot; Input</span>
-              <strong>Tokens enter the model</strong>
-              <p>Text becomes a sequence of token ids that the network can process.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>2 &middot; Forward pass</span>
-              <strong>Layers transform the signal</strong>
-              <p>The model mixes information forward through embeddings, attention, and MLPs.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>3 &middot; Prediction</span>
-              <strong>Guess the next token</strong>
-              <p>The final layer produces logits, then a probability for each candidate token.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>4 &middot; Loss</span>
-              <strong>Measure the mistake</strong>
-              <p>Compare the guess with the target token to see how wrong the model was.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>5 &middot; Backpropagation</span>
-              <strong>Send error backward</strong>
-              <p>Error signals flow in reverse so each layer knows how it contributed.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>6 &middot; Gradients</span>
-              <strong>Compute change directions</strong>
-              <p>Gradients tell us how each weight should move to reduce the loss.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>7 &middot; Update</span>
-              <strong>Nudge the weights</strong>
-              <p>The optimizer applies a small corrective step, usually with learning rate scaling.</p>
-            </article>
-            <article class="story-card" data-stage>
-              <span>8 &middot; Residual connection</span>
-              <strong>Keep the shortcut alive</strong>
-              <p>A bypass path preserves the original signal and adds the learned correction back in.</p>
-            </article>
+        <div class="loop-track" data-loop-track data-cycle-ms="3600">
+          <div class="loop-node is-active" data-loop-node>
+            <span>01 &middot; Input</span>
+            <strong>tokens in</strong>
+            <p>Text becomes token ids the network can process.</p>
           </div>
-
-          <div class="storyboard-visual">
-            <div class="signal-road" aria-hidden="true">
-              <span class="signal-bead"></span>
-            </div>
-            <div class="signal-caption">
-              <strong data-current-stage>Input</strong>
-              <p data-current-copy>Tokens enter the model and begin the forward pass.</p>
-            </div>
+          <div class="loop-node" data-loop-node>
+            <span>02 &middot; Forward</span>
+            <strong>embedding + attention</strong>
+            <p>Layers mix information left to right through the model.</p>
+          </div>
+          <div class="loop-node" data-loop-node>
+            <span>03 &middot; Prediction</span>
+            <strong>logits</strong>
+            <p>The final layer scores every candidate next token.</p>
+          </div>
+          <div class="loop-node" data-loop-node>
+            <span>04 &middot; Loss</span>
+            <strong>loss(pred, y)</strong>
+            <p>How wrong the guess was, as a single number.</p>
+          </div>
+          <div class="loop-node" data-loop-node>
+            <span>05 &middot; Backprop</span>
+            <strong>loss.backward()</strong>
+            <p>Error signals flow backward through every layer.</p>
+          </div>
+          <div class="loop-node" data-loop-node>
+            <span>06 &middot; Gradients</span>
+            <strong>&part;L / &part;w</strong>
+            <p>One direction-and-size signal per parameter.</p>
+          </div>
+          <div class="loop-node" data-loop-node>
+            <span>07 &middot; Update</span>
+            <strong>optimizer.step()</strong>
+            <p>Each weight nudges opposite its gradient.</p>
+          </div>
+          <div class="loop-node" data-loop-node>
+            <span>08 &middot; Residual</span>
+            <strong>+ shortcut</strong>
+            <p>Skip connections add the input back so layers learn corrections.</p>
           </div>
         </div>
 
@@ -189,7 +177,7 @@
           </div>
           <div class="glossary-grid">
             <div><strong>Forward pass</strong><p>The model&rsquo;s prediction path, left to right.</p></div>
-            <div><strong>Loss</strong><p>How wrong the prediction was.</p></div>
+            <div><strong>Logits</strong><p>Raw next-token scores before softmax.</p></div>
             <div><strong>Gradient</strong><p>The direction and size of change that reduces loss.</p></div>
             <div><strong>Residual connection</strong><p>A shortcut path that adds the input back in.</p></div>
           </div>
