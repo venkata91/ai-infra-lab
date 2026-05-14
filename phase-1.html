@@ -122,68 +122,64 @@
       </section>
 
       <section class="animation-panel" id="animation">
-        <div class="panel-heading bytebytego-heading">
-          <span class="section-tag">Animated explainer</span>
-          <h2>The training loop, one frame at a time</h2>
-          <p>One concept highlighted per step: tokens, embeddings, attention, loss, then backward through gradients and a tiny weight nudge.</p>
+        <div class="panel-heading">
+          <h2>Animated flow</h2>
+          <p>Each stage of the training loop, highlighted in turn. Same card vocabulary as Basics, with twice as many stops.</p>
         </div>
 
-        <div class="storyboard" data-storyboard>
-          <div class="stage-strip" aria-label="Training pipeline stages">
-            <button class="stage-pill is-active" data-stage-pill type="button"><span>01</span> Input</button>
-            <button class="stage-pill" data-stage-pill type="button"><span>02</span> Forward</button>
-            <button class="stage-pill" data-stage-pill type="button"><span>03</span> Prediction</button>
-            <button class="stage-pill" data-stage-pill type="button"><span>04</span> Loss</button>
-            <button class="stage-pill" data-stage-pill type="button"><span>05</span> Backprop</button>
-            <button class="stage-pill" data-stage-pill type="button"><span>06</span> Gradients</button>
-            <button class="stage-pill" data-stage-pill type="button"><span>07</span> Update</button>
-            <button class="stage-pill" data-stage-pill type="button"><span>08</span> Residual</button>
+        <div class="loop-track" data-loop-track data-cycle-ms="3600">
+          <div class="loop-node is-active" data-loop-node>
+            <span>01 &middot; Input</span>
+            <strong>tokens in</strong>
+            <p>Text becomes token ids the network can process.</p>
           </div>
-
-          <div class="storyboard-layout">
-            <div class="diagram-card">
-              <div class="diagram-heading">
-                <span class="diagram-kicker" data-current-stage>Input</span>
-                <h3 data-current-title>Tokens enter the model</h3>
-              </div>
-
-              <div class="pipeline-diagram" data-mode="forward">
-                <div class="diagram-lane lane-forward" aria-hidden="true"></div>
-                <div class="diagram-lane lane-backward" aria-hidden="true"></div>
-                <div class="diagram-lane lane-residual" aria-hidden="true"></div>
-
-                <div class="diagram-nodes">
-                  <div class="diagram-node node-input">Tokens</div>
-                  <div class="diagram-node node-embed">Embedding</div>
-                  <div class="diagram-node node-block">Transformer block</div>
-                  <div class="diagram-node node-logits">Logits</div>
-                  <div class="diagram-node node-softmax">Softmax</div>
-                </div>
-
-                <div class="diagram-packet packet-main"></div>
-                <div class="diagram-packet packet-backward"></div>
-                <div class="diagram-packet packet-residual"></div>
-                <div class="diagram-badge" data-current-badge>forward</div>
-              </div>
-            </div>
-
-            <aside class="detail-card">
-              <p data-current-copy>Text becomes token ids, then the forward pass begins.</p>
-              <ul data-current-bullets></ul>
-            </aside>
+          <div class="loop-node" data-loop-node>
+            <span>02 &middot; Forward</span>
+            <strong>embedding + attention</strong>
+            <p>Layers mix information left to right through the model.</p>
           </div>
+          <div class="loop-node" data-loop-node>
+            <span>03 &middot; Prediction</span>
+            <strong>logits</strong>
+            <p>The final layer scores every candidate next token.</p>
+          </div>
+          <div class="loop-node" data-loop-node>
+            <span>04 &middot; Loss</span>
+            <strong>loss(pred, y)</strong>
+            <p>How wrong the guess was, as a single number.</p>
+          </div>
+          <div class="loop-node" data-loop-node>
+            <span>05 &middot; Backprop</span>
+            <strong>loss.backward()</strong>
+            <p>Error signals flow backward through every layer.</p>
+          </div>
+          <div class="loop-node" data-loop-node>
+            <span>06 &middot; Gradients</span>
+            <strong>&part;L / &part;w</strong>
+            <p>One direction-and-size signal per parameter.</p>
+          </div>
+          <div class="loop-node" data-loop-node>
+            <span>07 &middot; Update</span>
+            <strong>optimizer.step()</strong>
+            <p>Each weight nudges opposite its gradient.</p>
+          </div>
+          <div class="loop-node" data-loop-node>
+            <span>08 &middot; Residual</span>
+            <strong>+ shortcut</strong>
+            <p>Skip connections add the input back so layers learn corrections.</p>
+          </div>
+        </div>
 
-          <div class="glossary">
-            <div class="panel-heading compact">
-              <h3>Glossary</h3>
-              <p>The minimum vocabulary that makes the animation click.</p>
-            </div>
-            <div class="glossary-grid">
-              <div><strong>Forward pass</strong><p>The model&rsquo;s prediction path, left to right.</p></div>
-              <div><strong>Logits</strong><p>Raw next-token scores before softmax.</p></div>
-              <div><strong>Gradient</strong><p>The direction and size of change that reduces loss.</p></div>
-              <div><strong>Residual connection</strong><p>A shortcut path that adds the input back in.</p></div>
-            </div>
+        <div class="glossary">
+          <div class="panel-heading compact">
+            <h3>Glossary</h3>
+            <p>The minimum vocabulary that makes the animation click.</p>
+          </div>
+          <div class="glossary-grid">
+            <div><strong>Forward pass</strong><p>The model&rsquo;s prediction path, left to right.</p></div>
+            <div><strong>Logits</strong><p>Raw next-token scores before softmax.</p></div>
+            <div><strong>Gradient</strong><p>The direction and size of change that reduces loss.</p></div>
+            <div><strong>Residual connection</strong><p>A shortcut path that adds the input back in.</p></div>
           </div>
         </div>
       </section>
