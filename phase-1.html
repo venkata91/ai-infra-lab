@@ -197,10 +197,20 @@
       <section class="curriculum">
         <div class="panel-heading">
           <h2>Hands-on curriculum</h2>
-          <p>Use nanoGPT as the lab bench. Each checkpoint has a concrete exercise and a pass condition.</p>
+          <p>Warm up with an MLP on MNIST, then move to nanoGPT. Each checkpoint has a concrete exercise and a pass condition.</p>
         </div>
 
         <div class="curriculum-grid">
+          <article>
+            <h3>Warm-up &middot; MLP on MNIST</h3>
+            <p>Before any GPT code, get the training loop in your hands. Trains a 3-layer MLP on MNIST in Google Colab (or any Python) and runs a learning-rate sweep plus a dropout-vs-no-dropout overfit demo.</p>
+            <ul>
+              <li>Exercise: open <code class="inline">labs/mnist-mlp.py</code> in Colab; reach ~98% test accuracy.</li>
+              <li>Exercise: read the LR-sweep plot. Identify "too small / just right / too large" on a real loss curve.</li>
+              <li>Pass when: you can point at every line of the training loop and name the concept from Basics it implements.</li>
+            </ul>
+            <div class="more-link"><a href="labs/mnist-mlp.py">Open the MLP lab &rarr;</a></div>
+          </article>
           <article>
             <h3>Checkpoint 1 &middot; Tokens &amp; embeddings</h3>
             <p>Open nanoGPT and find where text becomes token ids, then where token ids become vectors.</p>

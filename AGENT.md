@@ -33,13 +33,15 @@ ai-infra-lab/
 ├── phase-3.html        # Inference fundamentals
 ├── phase-4.html        # Training → Inference trade-offs
 ├── styles.css          # All styling (single file by design)
-├── app.js              # Two small DOM cyclers; gracefully no-op when DOM is absent
+├── app.js              # One generic loop-track cycler; no-ops when DOM is absent
 ├── README.md           # User-facing intro
 ├── AGENT.md            # This file
+├── labs/
+│   └── mnist-mlp.py    # Hands-on companion: MLP on MNIST with LR sweep + dropout demo
 └── content/
-    ├── fundamentals.md       # Deep-dive notes for Basics page
-    ├── phase-1.md            # Notes for Phase 1
-    └── lesson-1-batch-to-loss.md
+    ├── fundamentals.md            # Deep-dive notes for Basics page
+    ├── phase-1.md                 # Notes for Phase 1
+    └── lesson-1-batch-to-loss.md  # Tracing one batch through training
 ```
 
 ### Why a single CSS file
@@ -135,9 +137,9 @@ Every page follows the same skeleton. **Copy this whole block** to start a new p
 **Rule of thumb:** blue = neutral / structural (forward, training, primary), orange = active / accent / surprise (backward, validation loss, current page, "stop here"). Don't introduce a third color without a reason.
 
 ### 4.2 Typography
-- `--cursive: 'Caveat'` — all headings, kickers, labels, story-card spans, accent text in viz.
+- `--cursive: 'Caveat'` — all headings, kickers, labels, loop-node spans, accent text in viz.
 - `--hand: 'Patrick Hand'` — body text, paragraphs, lists.
-- Monospace (system) — code blocks only.
+- Monospace (system) — code blocks and `.loop-node strong` (code-style titles).
 
 Don't introduce a sans-serif body font without good reason. The notebook feel depends on the handwriting fonts being everywhere.
 
@@ -164,16 +166,19 @@ These class names are stable and shared across all pages. **Reuse them; don't fo
 - `.fundamentals-grid` — 3-col variant (used on Basics + every phase page)
 - `.curriculum-grid` — 2-col grid for hands-on checkpoints
 - `.phase-grid` — 2-col grid of `.phase-card` (landing page only)
+- `.grid` + `.card` — 4-col concept-card row used only on Phase 1 (Tokens / Embeddings / Attention / Systems). Optional `.pulse` + `.delay-{1,2,3}` for staggered float animation.
 
 **Animated mini-elements**
-- `.loop-track` + `.loop-node` — the 4-stage training loop (basics page)
-- `.storyboard` + `.story-card` — the 8-stage animated pipeline (phase-1)
-- `.signal-road` + `.signal-bead` — the bead that travels along forward/backward in phase-1
+- `.loop-track` + `.loop-node` — horizontal row of cards, one `.is-active` at a time. Used on Basics (4 stages) and Phase 1 (8 stages). Per-track cycle interval via `data-cycle-ms`.
+
+**Glossary blocks**
+- `.glossary` — dashed-border panel at the bottom of an animation section (Phase 1).
+- `.glossary-grid` — 4-col grid of `<div><strong>Term</strong><p>Definition</p></div>` entries.
 
 **Decorative**
 - `.overfit-callout` — the dashed orange callout on the basics page
 - `.cadence` — accountability section (landing page only)
-- `.more-link` — pill button linking to a markdown deep-dive
+- `.more-link` — pill button linking to a markdown deep-dive or a lab file
 
 ### 4.4 The visualization toolkit
 
@@ -250,14 +255,30 @@ Plus three named animated balls used in specific viz: `.gd-ball` (gradient desce
 
 Resist the urge. The handwriting + cream + navy/orange aesthetic is the project's identity. If you change it, change the whole site at once and update §4 of this file. Don't half-restyle one page.
 
+### 5.5 Add a hands-on lab
+
+The `labs/` directory holds runnable Python companions to the phases. Each lab is a single self-contained `.py` file with `# %%` cell markers so it copy-pastes cleanly into Google Colab or any Jupyter env.
+
+Rules for new labs:
+
+1. **One file per lab.** No dependencies between labs.
+2. **Cells delimited with `# %%`.** Standard convention; Colab, VS Code, and Jupytext all understand it.
+3. **Top-of-file docstring** explains: what concepts on the site this maps to, how to run (Colab, local, Jupyter), expected wall-clock time, expected final result.
+4. **Map each line back to a site concept.** A reader who finished the Basics page should be able to point at every line and name the card it implements.
+5. **Free + low-cost first.** Default to Colab T4 or CPU. Anything that requires paid GPUs (>$30 / month) needs a written justification at the top of the file.
+6. **Link from the page.** Add a `.more-link` callout in the relevant phase's curriculum article pointing at the lab.
+
+Existing labs:
+
+- `labs/mnist-mlp.py` — Phase 1 warm-up. 3-layer MLP on MNIST with a learning-rate sweep (Basics → "Learning rate") and a dropout-vs-no-dropout demo on a small subset (Basics → "Regularization" and "Overfitting"). ~30 seconds on a T4, ~3 minutes on CPU.
+
 ---
 
 ## 6. JavaScript
 
-`app.js` is intentionally tiny (~30 LOC) and contains only two DOM cyclers:
+`app.js` is intentionally tiny (~12 LOC) and contains a single generic cycler.
 
-1. **Storyboard cycler** — advances the active stage in `#animation` on `phase-1.html`. Triggered only when `[data-storyboard]` exists on the page.
-2. **Loop-track cycler** — advances the active stage in the basics-page training loop. Triggered only when `[data-loop-node]` exists.
+**The loop-track cycler** finds every `[data-loop-track]` element and rotates `.is-active` across its `[data-loop-node]` children at an interval defined by `data-cycle-ms` on the track (default 2200ms). Used on Basics (4 stages, 2.2s) and Phase 1 (8 stages, 3.6s). Gracefully no-ops on pages with no track.
 
 Both are guarded by element-existence checks and gracefully no-op on pages that don't have the relevant DOM. **If you add new animated UI, prefer pure CSS first.** Only add JS if the animation requires logic (e.g., active-state stepping). Do not introduce new dependencies.
 
