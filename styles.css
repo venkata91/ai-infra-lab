@@ -124,9 +124,8 @@ p { margin: 6px 0; line-height: 1.6; font-size: 1.05rem; }
   color: var(--ink-soft);
 }
 
-/* === Hero links / pill buttons === */
-.hero-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
-.hero-links a, .more-link a {
+/* === Pill buttons (used by .more-link) === */
+.more-link a {
   padding: 9px 18px;
   border-radius: 999px;
   border: 2.5px solid var(--line);
@@ -136,7 +135,7 @@ p { margin: 6px 0; line-height: 1.6; font-size: 1.05rem; }
   color: var(--blue);
   border-bottom-style: solid;
 }
-.hero-links a:hover, .more-link a:hover {
+.more-link a:hover {
   background: var(--orange-bg);
   border-color: var(--orange);
   color: var(--orange-deep);
@@ -586,7 +585,6 @@ code.inline { padding: 1px 6px; margin-top: 0; font-size: 0.9em; }
 .delay-1 { animation-delay: .4s; }
 .delay-2 { animation-delay: .8s; }
 .delay-3 { animation-delay: 1.2s; }
-.delay-4 { animation-delay: 1.6s; }
 @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
 /* === Phase navigation === */
@@ -755,9 +753,6 @@ code.inline { padding: 1px 6px; margin-top: 0; font-size: 0.9em; }
 /* === Phase 2/3/4 specific viz colors === */
 .v-fail { fill: #c64a3a; }
 .v-ok { fill: #3aa860; }
-.v-line-dim { stroke: var(--line-faint); stroke-width: 1; }
-.v-token { fill: var(--blue); }
-.v-token-new { fill: var(--orange); }
 .v-bar-base {
   fill: var(--blue-bg);
   stroke: var(--blue);
@@ -766,7 +761,7 @@ code.inline { padding: 1px 6px; margin-top: 0; font-size: 0.9em; }
 
 /* === Responsive === */
 @media (max-width: 920px) {
-  .grid, .pipeline, .summary-strip { grid-template-columns: 1fr 1fr; }
+  .grid, .summary-strip { grid-template-columns: 1fr 1fr; }
   .glossary-grid { grid-template-columns: 1fr 1fr; }
   .fundamentals-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .loop-arrow { display: none; }
@@ -775,7 +770,7 @@ code.inline { padding: 1px 6px; margin-top: 0; font-size: 0.9em; }
   .scope-strip { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
-  .grid, .pipeline, .summary-strip, .lesson-grid, .curriculum-grid { grid-template-columns: 1fr; }
+  .grid, .summary-strip, .lesson-grid, .curriculum-grid { grid-template-columns: 1fr; }
   .glossary-grid { grid-template-columns: 1fr; }
   .fundamentals-grid { grid-template-columns: 1fr; }
   .shell { width: min(100% - 20px, 1100px); }

@@ -39,9 +39,9 @@ ai-infra-lab/
 ├── labs/
 │   └── mnist-mlp.py    # Hands-on companion: MLP on MNIST with LR sweep + dropout demo
 └── content/
-    ├── fundamentals.md       # Deep-dive notes for Basics page
-    ├── phase-1.md            # Notes for Phase 1
-    └── lesson-1-batch-to-loss.md
+    ├── fundamentals.md            # Deep-dive notes for Basics page
+    ├── phase-1.md                 # Notes for Phase 1
+    └── lesson-1-batch-to-loss.md  # Tracing one batch through training
 ```
 
 ### Why a single CSS file
@@ -166,14 +166,19 @@ These class names are stable and shared across all pages. **Reuse them; don't fo
 - `.fundamentals-grid` — 3-col variant (used on Basics + every phase page)
 - `.curriculum-grid` — 2-col grid for hands-on checkpoints
 - `.phase-grid` — 2-col grid of `.phase-card` (landing page only)
+- `.grid` + `.card` — 4-col concept-card row used only on Phase 1 (Tokens / Embeddings / Attention / Systems). Optional `.pulse` + `.delay-{1,2,3}` for staggered float animation.
 
 **Animated mini-elements**
 - `.loop-track` + `.loop-node` — horizontal row of cards, one `.is-active` at a time. Used on Basics (4 stages) and Phase 1 (8 stages). Per-track cycle interval via `data-cycle-ms`.
 
+**Glossary blocks**
+- `.glossary` — dashed-border panel at the bottom of an animation section (Phase 1).
+- `.glossary-grid` — 4-col grid of `<div><strong>Term</strong><p>Definition</p></div>` entries.
+
 **Decorative**
 - `.overfit-callout` — the dashed orange callout on the basics page
 - `.cadence` — accountability section (landing page only)
-- `.more-link` — pill button linking to a markdown deep-dive
+- `.more-link` — pill button linking to a markdown deep-dive or a lab file
 
 ### 4.4 The visualization toolkit
 

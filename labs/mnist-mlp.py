@@ -25,16 +25,16 @@ Option C: any Jupyter env (Kaggle, Lightning AI Studios, local)
 
 Training time
 -------------
-  CPU (M2 / modern laptop):  ~2-3 minutes total
-  T4 GPU (Colab free tier):  ~30 seconds total
+  CPU (M2 / modern laptop):  ~6-10 minutes total
+  T4 GPU (Colab free tier):  ~1 minute total
 
 You will see ~98% test accuracy after 5 epochs.
 """
 
 # %%
 # ===== Cell 1: imports + device =====
+import math
 import time
-import copy
 
 import torch
 import torch.nn as nn
@@ -175,16 +175,22 @@ for lr in LRS:
     print(f"\nlr = {lr}")
     m = MLP().to(device)
     h = train_one(m, train_loader, test_loader, epochs=SWEEP_EPOCHS, lr=lr, verbose=True)
+    final = h["train_loss"][-1]
+    if math.isnan(final) or math.isinf(final):
+        print(f"  --> diverged to NaN/inf. That IS the lesson: lr={lr} is way too large.")
     sweep_results[lr] = h
 
-# plot all four train-loss curves on one chart
+# plot all four train-loss curves on one chart; skip diverged runs so the
+# chart is readable instead of squashed by an inf
 plt.figure(figsize=(8, 4.5))
 for lr, h in sweep_results.items():
-    label = f"lr={lr}"
-    plt.plot(h["epoch"], h["train_loss"], marker="o", label=label)
+    losses = h["train_loss"]
+    if any(math.isnan(v) or math.isinf(v) for v in losses):
+        continue  # diverged; reported above
+    plt.plot(h["epoch"], losses, marker="o", label=f"lr={lr}")
 plt.xlabel("epoch")
 plt.ylabel("training cross-entropy")
-plt.title("Learning rate sweep on MNIST MLP")
+plt.title("Learning rate sweep on MNIST MLP (diverged runs omitted)")
 plt.legend()
 plt.grid(alpha=0.3)
 plt.tight_layout()
@@ -204,21 +210,23 @@ plt.show()
 # and train for many epochs. Watch the no-dropout model's test accuracy peak
 # and then drift down, while the dropout model holds its peak longer.
 
-SMALL_N = 2000
-SMALL_EPOCHS = 25
+SMALL_N = 1000
+SMALL_EPOCHS = 40
 
 small_train = Subset(train_ds, range(SMALL_N))
 small_loader = DataLoader(small_train, batch_size=64, shuffle=True)
 
-print("\n--- Overfitting demo (no-dropout) ---")
+# weight_decay=0 here: we want to isolate the effect of dropout, not have
+# AdamW's built-in L2 regularization muddy the comparison.
+print("\n--- Overfitting demo (no-dropout, no weight-decay) ---")
 m_plain = MLP(dropout=0.0).to(device)
 h_plain = train_one(m_plain, small_loader, test_loader,
-                    epochs=SMALL_EPOCHS, lr=1e-3, verbose=False)
+                    epochs=SMALL_EPOCHS, lr=1e-3, weight_decay=0.0, verbose=False)
 
-print("--- Overfitting demo (dropout=0.4) ---")
+print("--- Overfitting demo (dropout=0.4, no weight-decay) ---")
 m_drop = MLP(dropout=0.4).to(device)
 h_drop = train_one(m_drop, small_loader, test_loader,
-                   epochs=SMALL_EPOCHS, lr=1e-3, verbose=False)
+                   epochs=SMALL_EPOCHS, lr=1e-3, weight_decay=0.0, verbose=False)
 
 # plot test accuracy curves side-by-side
 plt.figure(figsize=(8, 4.5))

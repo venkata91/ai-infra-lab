@@ -25,6 +25,11 @@ Each phase has a tight scope, an LOE estimate, and a concrete deliverable.
 - `content/lesson-1-batch-to-loss.md` — tracing a single batch through training
 - `labs/mnist-mlp.py` — Phase 1 warm-up lab: MLP on MNIST with learning-rate sweep + dropout demo. Runs in Google Colab or any Python.
 
+## Operating docs
+
+- `AGENT.md` — operating manual for anyone (human or AI) extending the site; documents the design system, page template, reusable components, and rules.
+- `ACCOUNTABILITY.md` — weekly checkpoint structure.
+
 ## Run locally
 
 ```bash
